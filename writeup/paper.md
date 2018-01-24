@@ -14,10 +14,8 @@ We propose a method here to detect the POV character for each section of the boo
 The surge in popularity of fiction ebooks has openned a new niche for consumer discourse processing. Tools such as the one present here, give the reader new fredoms in controling how they consume their media. 
 
 
-
-(http://wot.wikia.com/w3iki/Statistical_analysis)
-Across its 15 books, Robert Jordan's Wheel of Time Series had 147 POV characters. Only about one fifth of the total word count was from the POV of the ``main character''.
-Other works, such as George R.R. Martin's Game of Thrones do not have a single main character, or even a easily defined collection of major characters.
+Across its 15 books, Robert Jordan's "Wheel of Time" series had 146 POV characters (http://wot.wikia.com/w3iki/Statistical_analysis). Only about one fifth of the total word count was from the POV of the ``main character''.
+George R.R. Martin's "A Song of Ice and Fire",  have over 30 in the books published so far (http://awoiaf.westeros.org/index.php/POV_character).
 
 ## Corpus Construction
 
