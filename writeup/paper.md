@@ -1,4 +1,4 @@
-# A Open Source Method for Seperating Books by POV character
+# A Open Source Method for Seperating Book Chapters by Main Character
 
 
 
@@ -6,10 +6,10 @@
 
 
 ## Introduction
+Many books have multiple main characters, often each character is written from the perspective of a different main character.
+Different sections are written from the perspective of different characters. Generally, these books are written in limitted third-person point of view (POV); that is to say the reader has little or or more knowledge of the situtation described than the main character does. Having a large cast of character, in particular POV characters, is a hallmark of the epic fantasy genre.
 
-Many books are written from the point of view of multiple characters. Different sections are written from the perspective of different characters. Generally, these books are written in limitted third-person point of view (POV); though sometimes they may mix a *main character* using a first person POV (E.g. Jonathan Stroud's Bartimaeus). Having a large cast of character, in particular POV characters, is a hallmark of the epic fantasy genre.
-
-We propose a method here to detect the POV character for each section of the book. Detecting the POV character is not a difficult task, as the strong baseline result shows. However to our knowledge there does not exist any current software to do this. We attribute this lack to its irelivent until recent times.
+We propose a method here to detect the main/POV character for each section of the book. Detecting the main character is not a difficult task, as the strong baseline result shows. However to our knowledge there does not exist any current software to do this. We attribute this lack to its irelivent until recent times.
 
 The surge in popularity of fiction ebooks has openned a new niche for consumer discourse processing. Tools such as the one present here, give the reader new fredoms in controling how they consume their media. 
 
