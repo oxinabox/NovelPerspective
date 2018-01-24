@@ -1,6 +1,6 @@
 import numpy as np
 import nltk
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, OrderedDict
 import itertools as it
 def pairwise(iterable):
     "s -> (s0,s1), (s1,s2), (s2, s3), ..."
@@ -61,7 +61,7 @@ tagset.append('PAD')
 tagset.append('#')
 
 def FeatureVec():
-    vec=dict()
+    vec=OrderedDict()
     vec["occur_count"]=0
     vec["occur_percent"]=0.0
     vec["first_occur_position"]=0
@@ -128,7 +128,7 @@ def get_feature_vectors(raw_text, nickname2name=dict()):
             vec["after_POS_was_percent_"+tag]=100*vec["after_POS_was_"+tag]/count
         
         
-        vectors.append(list(vec.values()))       
+        vectors.append(list(vec.values()))
         assert len(vectors[-1])==len(vector_keys), "%i != %i" % (len(vectors[-1]), len(vector_keys) )#Make sure I have everything
         names.append(name)
     
