@@ -12,7 +12,9 @@ import io
 
 import codecs
 sys.stdout = codecs.getwriter('utf8')(sys.stdout.buffer)
-print("Content-Type: text/html; charset=utf-8\n")
+print("Content-Type: text/html; charset=utf-8")
+#print("Transfer-Encoding: chunked")
+print()
 sys.stderr = sys.stdout
 
 try:
@@ -39,6 +41,7 @@ try:
             return uploaded_file_path
 ##########################################
     filepath = get_filepath()
+    #filepath = "../input_books/warbreaker/Warbreaker.epub"
     if filepath:
         main(filepath)
     else:

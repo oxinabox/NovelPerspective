@@ -62,8 +62,7 @@ def train_classifier(texts, reference_characters, classifier, nicknames2name=dic
     return classifier
 
 def run_classifier(texts, classifier, nicknames2name=dict()):
-    return [choose_character(classifier, text, nicknames2name)
-            for text in texts]
+    return (choose_character(classifier, text, nicknames2name) for text in texts)
     
         
 def test_classifier(texts, reference_characters, classifier, nicknames2name=dict()):

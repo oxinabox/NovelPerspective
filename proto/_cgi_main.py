@@ -17,7 +17,8 @@ def main(filepath):
     print("<h2>Classification of Chapters</h2>"); sys.stdout.flush()
     
     print("<table>")
-    for character, text in zip(output_characters[1:100], texts[1:100]):
-        print("<tr><td>\t",character,"\t</td><td>\t",text[0:256],"...\t</td></tr>")
+    for character, text in zip(output_characters, texts):
+#        print("<tr><td>\t",character,"\t</td><td>\t",text[0:256],"...\t</td></tr>"); sys.stdout.flush()
+         yield ("<tr><td>\t",character,"\t</td><td>\t",text[0:256],"...\t</td></tr>"); sys.stdout.flush()
     print("</table>")
         
