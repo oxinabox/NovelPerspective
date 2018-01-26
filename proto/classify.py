@@ -43,15 +43,15 @@ def choose_character(classifier, raw_text, nicknames2name=dict(), feature_extrac
     return names[np.argmax(scores)]
 
 
-def get_binary_choice_feature_vectors(raw_text, reference_name, nicknames2name):
-    names, vectors, vector_keys = get_feature_vectors(raw_text, nicknames2name)
+def get_binary_choice_feature_vectors(raw_text, reference_name):
+    names, vectors, vector_keys = get_feature_vectors(raw_text)
     return vectors, 
 
-def train_classifier(texts, reference_characters, classifier, nicknames2name=dict()):
+def train_classifier(texts, reference_characters, classifier):
     Xs = [] # Feature vectors
     Ys = [] # Binary as to if this feature is the target
     for reference_name, raw_text in zip(reference_characters, texts):
-        names, vectors, _ = get_feature_vectors(raw_text, nicknames2name)
+        names, vectors, _ = get_feature_vectors(raw_text)
         Ys.extend([(name == reference_name) for name in names])
         Xs.extend(vectors)
         
@@ -66,5 +66,6 @@ def run_classifier(texts, classifier, nicknames2name=dict()):
     
         
 def test_classifier(texts, reference_characters, classifier, nicknames2name=dict()):
-    output_characters = run_classifier(texts, classifier)
+    output_characters_gen = run_classifier(texts, classifier, nicknames2name)
+    output_characters = list(output_characters_gen)
     return sklearn.metrics.accuracy_score(output_characters, reference_characters)
