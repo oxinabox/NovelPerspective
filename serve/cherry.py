@@ -4,12 +4,12 @@ import cherrypy
 
 cherrypy.config.update({
     'server.socket_port': 7778,
-    'server.socket_host': '0.0.0.0'
+    'server.socket_host': '0.0.0.0',
+    'request.show_traceback': True,
 })
 
 cherrypy.log.screen = True
 
-import cherrypy
 import tempfile
 import os.path
 class App:
@@ -30,7 +30,6 @@ class App:
         </html>"""
 
         yield out % (myFile.filename, myFile.content_type)
-
         #save it to disk for disk operations
         disk_fh = tempfile.NamedTemporaryFile(suffix=myFile.filename, delete=False)
         disk_fh.write(myFile.file.read())
