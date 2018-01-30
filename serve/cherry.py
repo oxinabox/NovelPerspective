@@ -23,17 +23,18 @@ class App:
     @cherrypy.config(**{'response.stream': True})
     def upload(self, myFile):
         out = """<html>
+        <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        </head>
         <body>
-            myFile filename: %s<br />
-            myFile mime-type: %s
-        </body>
-        </html>"""
+        """
 
-        yield out % (myFile.filename, myFile.content_type)
+        yield out
+        #yield "<li> Uploaded: " + myFile.filename
         #save it to disk for disk operations
         disk_fh = tempfile.NamedTemporaryFile(suffix=myFile.filename, delete=False)
         disk_fh.write(myFile.file.read())
-        yield "<br>... Processing...</br>"
+        #yield "<li>... Processing..."
         
         yield from main(disk_fh.name)
     

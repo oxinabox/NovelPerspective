@@ -30,9 +30,6 @@ def load_epub(book_filename):
             continue
                
         text = BeautifulSoup(ch.get_content(),"lxml").text
-        if len(text)<2000:
-            continue
-               
         indexes.append(ii)
         texts.append(text)
     return texts, indexes
