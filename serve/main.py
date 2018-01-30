@@ -9,13 +9,20 @@ from classify import *
 from sklearn.externals import joblib
 import cherrypy
 
+import traceback
 
 def main(filepath):
     #yield ("<li>Loading Book");
-    cherrypy.log("************************", filepath)
-    texts, indexes = load_book(filepath)
-    # Note: indexes are no sequential as no chapter items are skipped
-    
+    try:
+        book = load_book(filepath)
+        cherrypy.session['book'] = book
+        texts, indexes = load_chapters(book)
+    except Exception as err:
+        yield "<h3> Failed to load book</h3>"
+        yield "<pre> str(err) \n\n\n"
+        yield traceback.print_exc()
+        raise(err)
+
     #yield ("<li>Loading Model");
     cls = joblib.load("../trained_models/GoT-no-headings.pkl")
     
@@ -72,7 +79,7 @@ def book_table(output_characters, texts, indexes):
     for index, character, text in zip(indexes, output_characters, texts):
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
         lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, character)
-        yield tr(chkbox, lbl, text[0:256])
+        yield tr(chkbox, lbl, text[0:512])
 
     yield("</table>")
     yield("""<input type="submit" value="Generate ebook with only selected chapters"/>""")
