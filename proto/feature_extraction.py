@@ -32,7 +32,8 @@ def ne_preprocess(raw_text):
     tokenised_sents = [nltk.word_tokenize(sent) for sent in sents]
     tagged_sents = nltk.pos_tag_sents(tokenised_sents)
     ne_sents = nltk.ne_chunk_sents(tagged_sents, binary=True)
-    return list(ne_sents)
+    return list(it.chain(*ne_sents))
+    
 
 def get_name(ne_tree):
     return " ".join([tagged_leaf[0] for tagged_leaf in ne_tree.leaves()])
@@ -83,8 +84,7 @@ Returns a list of names, feature_vectors, and a definition of the feature vector
 """
 def get_feature_vectors(raw_text, nickname2name=dict()):
     
-    ne_sents = ne_preprocess(raw_text)
-    ne_words = [("PAD","PAD")] +list(it.chain(*ne_sents)) + [("PAD","PAD")]
+    ne_words = [("PAD","PAD")] + ne_preprocess(raw_text) + [("PAD","PAD")]
     
     feature_vecs = defaultdict(FeatureVec)
     overall_counts = Counter()

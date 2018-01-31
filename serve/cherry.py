@@ -20,9 +20,10 @@ import os.path
 
 
 ##########################
-# I have some threading related worries about this
-# But I have no idea how cherrypy is handling threading
-# Should be fine for small numbers of users.
+# This is apparently threadsafe
+# see list of atomic operations: 
+# http://effbot.org/zone/thread-synchronization.htm
+# modifying a list in place is fine
 
 import time
 import tempfile
@@ -52,8 +53,6 @@ def check_expires(timeout = 2*60*60): # 2 hours
             break
     for ii in range(0, keep_after):
         to_expire.pop(ii)
-
-
 
 
 ###################

@@ -1,71 +1,123 @@
 from feature_extraction import *
 import numpy as np
 
+from collections import Counter
+
 from xgboost import XGBClassifier
-import sklearn.tree
 import sklearn.metrics
 from sklearn.model_selection import cross_val_score
 
+from abc import *
 
-def character_scores(classifier, raw_text, feature_extractor = get_feature_vectors):
-    names, feature_vectors, vector_keys = feature_extractor(raw_text)
-    assert(len(names) == len(feature_vectors))
-    scores = classifier.predict_proba(feature_vectors)[:,1] #second index is positive class
-    return scores, names
-
-"""
-Merge the scores of characters nicknames into the real name
-"""
-def sanitize_name_scores(scores,names, nicknames2name):
-    assert(len(names) == len(scores))
-    for nickname,truename in nicknames2name.items():
-        try:
-            ind_nick = names.index(nickname)
+###################################################
+class AbstactCharacterSolver(ABC):
+    
+    def __init__(self, nicknames2name=dict()):
+        self.nicknames2name = nicknames2name
+        
+    def choose_character(self, raw_text):
+        scores, names = self.character_scores(raw_text)
+        self.merge_nicknames(scores,names)
+        return names[np.argmax(scores)]    
+    
+    def choose_characters(self, raw_texts):
+        return (self.choose_character(text) for text in raw_texts)
+    
+    
+    """
+    Should return scores, names
+    Higher score is better, scores should be nonnegative.
+    """
+    @abstractmethod
+    def character_scores(self, raw_text):
+        pass
+    
+    """
+    Merge the scores of characters nicknames into the real name
+    """
+    def merge_nicknames(self, scores, names):
+        assert(len(names) == len(scores))
+        for nickname,truename in self.nicknames2name.items():
             try:
-                ind_true = names.index(truename)
+                ind_nick = names.index(nickname)
+                try:
+                    ind_true = names.index(truename)
 
-                #transfer scores over
-                scores[ind_true]+=scores[ind_nick]
-                scores[ind_nick]=0
+                    #transfer scores over
+                    scores[ind_true]+=scores[ind_nick]
+                    scores[ind_nick]=0
+                except ValueError:
+                        # truename not found, rename nick
+                        names[ind_nick]=truename
             except ValueError:
-                    # truename not found, rename nick
-                    names[ind_nick]=truename
-        except ValueError:
-            #nick not found in names
-            #no worries
-            pass       
+                #nick not found in names
+                #no worries
+                pass
     
-
-def choose_character(classifier, raw_text, nicknames2name=dict(), feature_extractor = get_feature_vectors):
-    scores, names = character_scores(classifier, raw_text, feature_extractor)
-    sanitize_name_scores(scores,names, nicknames2name)
     
-    return names[np.argmax(scores)]
+    
+    def train(self, raw_texts, reference_characters):
+        pass; #Fall back for non-ML methods
+    
+    def test(self, raw_texts, reference_characters, metric=sklearn.metrics.accuracy_score):
+        output_characters_gen = self.choose_characters(raw_texts)
+        output_characters = list(output_characters_gen)
+        return metric(output_characters, reference_characters)
+    
+##################################################
+
+class MLCharacterSolver(AbstactCharacterSolver):
+    
+    def __init__(self, classifier=XGBClassifier(), nicknames2name=dict(), feature_extractor = get_feature_vectors):
+        self.classifier = classifier
+        self.feature_extractor = feature_extractor
+        super().__init__(nicknames2name)
 
 
-def get_binary_choice_feature_vectors(raw_text, reference_name):
-    names, vectors, vector_keys = get_feature_vectors(raw_text)
-    return vectors, 
+    def character_scores(self, raw_text):
+        names, feature_vectors, vector_keys = self.feature_extractor(raw_text)
+        assert(len(names) == len(feature_vectors))
+        scores = self.classifier.predict_proba(feature_vectors)[:,1] #second index is positive class
+        return scores, names
 
-def train_classifier(texts, reference_characters, classifier):
-    Xs = [] # Feature vectors
-    Ys = [] # Binary as to if this feature is the target
-    for reference_name, raw_text in zip(reference_characters, texts):
-        names, vectors, _ = get_feature_vectors(raw_text)
-        Ys.extend([(name == reference_name) for name in names])
-        Xs.extend(vectors)
+    def train(self, texts, reference_characters):
+        Xs = [] # Feature vectors
+        Ys = [] # Binary as to if this feature is the target
+        for reference_name, raw_text in zip(reference_characters, texts):
+            names, vectors, _ = self.feature_extractor(raw_text)
+            Ys.extend([(name == reference_name) for name in names])
+            Xs.extend(vectors)
+
+        Xs = np.asarray(Xs) 
+        Ys = np.asarray(Ys)
+
+        self.classifier.fit(Xs,Ys)
+        return self
+   
         
-    Xs = np.asarray(Xs) 
-    Ys = np.asarray(Ys)
+##################################################
 
-    classifier.fit(Xs,Ys)
-    return classifier
+class FirstMentionedSolver(AbstactCharacterSolver):
+    def character_scores(self, raw_text):
+        ne_words = ne_preprocess(raw_text)
+        for cur in ne_words:
+            if type(cur)==nltk.tree.Tree and cur.label()=='NE':
+                name = get_name(cur)
+                return [1.0], [name] # Just return the first one we find
 
-def run_classifier(texts, classifier, nicknames2name=dict()):
-    return (choose_character(classifier, text, nicknames2name) for text in texts)
-    
+class MostMentionedSolver(AbstactCharacterSolver):
+    def character_scores(self, raw_text):
+        ne_words = ne_preprocess(raw_text)
+       
+        total = 0
+        mentions = Counter()
+        for cur in ne_words:
+            if type(cur)==nltk.tree.Tree and cur.label()=='NE':
+                name = get_name(cur)
+                mentions[name]+=1
+                total+=1
         
-def test_classifier(texts, reference_characters, classifier, nicknames2name=dict()):
-    output_characters_gen = run_classifier(texts, classifier, nicknames2name)
-    output_characters = list(output_characters_gen)
-    return sklearn.metrics.accuracy_score(output_characters, reference_characters)
+        return np.fromiter(mentions.values(), dtype="float64")/total,  list(mentions.keys())
+        # Score is equal to portion of times it is mentioned
+            
+            
