@@ -1,20 +1,58 @@
-<html><body>
+<html>
+<head>
+	<title>NovelPerspective</title>
+</head>
+<body>
 <h1>Novel Perspective</h1>
+<p>This tool detects the main/point-of-view character for each chapter of a book, and allows you create a copy of the ebook with just the chapters about the characters you are interested in.</p>
+
+
+
 <p>Please upload the novel to analyse, and restructure.<p>
-<p>Epub format is preferred.</p>
-<p>Other formats will attempt to be coverted using <a href="https://manual.calibre-ebook.com/generated/en/ebook-convert.html">Calibre</a>. This may cause a noticable delay, and may not work well.<p>
-<p>If the epub file does not divide into chapters this will not work at all.
+<p>Epub format is preferred. <br/>
+Other formats will attempt to be coverted using <a href="https://manual.calibre-ebook.com/generated/en/ebook-convert.html">Calibre</a>. This may cause a noticable delay, and may have issues.<br/>
+If the epub file does not divide into chapters this will not work at all.<br/>
 This will not be a problem for most retail epubs, but may cause issues e.g. for files converted from PDF.
 </p>
 
-    
+<!----------------------------------- -->
+<hr/>
 <form enctype="multipart/form-data" action="upload" method="post">
-	<p>File: <input type="file" name="myFile"></p>
-	<p><input type="submit" value="Upload"></p>
+	<table>
+		<tr>
+			<td>
+				Ebook File: <input type="file" name="myFile">
+			</td>
+			<td>
+				Additional Processing:
+			</td>
+		</tr>
+		<tr>
+			<td>
+				Character Classification System: <br/>
+				<input type="radio" id="solver1" name="solver_id" value="FirstMentioned">
+				<label for="solver1"
+				 title="Very good if the book actually starts each chapter with the name of the main character e.g. as the chapter title. Very bad otherwise.">First Mentioned</label>
+
+				<input type="radio" id="solver2" name="solver_id" value="MostMentioned">
+				<label for="solver2" title="Strong baseline">Most Mentioned</label>
+
+				<input type="radio" id="solver3" name="solver_id" value="GoT-no-headings.pkl" checked="checked">
+				<label for="solver3">Machine Learning Based</label>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<input type="submit" value="Upload">
+			</td>
+		</tr>
+	</table>
 </form>
+<hr/>
+<!----------------------------------- -->
 
 <p><strong>Notice:</strong>
-Not violating copyright is your responsibility.
+Not violating copyright is your responsibility. </br>
 In some jurisdictions you are allowed to modify media you own, so long as you do not distribute the modified form.<br>
 It is also allowed under the Creative Commons No Derivatives licenses.<br>
 (the above does not consitute legal advise.).
@@ -23,12 +61,18 @@ This application does not store your uploaded books, and will only ever display 
 </p>
 
 
-<h3> You may like to try this on </h3>
+<h3> You may like to try this on: </h3>
+Ideal cases (modern writing style, limitted 3rd person POV):
 	<ul>
-		<li> <a href="https://brandonsanderson.com/books/warbreaker/warbreaker/warbreaker-rights-and-downloads/">Warbreaker by Brandon Sanderson (PDF) <a> (CC-BY-NC-ND)
-		<li> <a href="http://www.gutenberg.org/ebooks/98">A Tale of Two Cities by Charles Dickens<a> (Public domain)
-		<li> <a href="http://www.gutenberg.org/ebooks/21839">Sense and Sensibility by Jane Austen<a> (Public domain)
+		<li> <a href="https://brandonsanderson.com/books/warbreaker/warbreaker/warbreaker-rights-and-downloads/">Warbreaker by Brandon Sanderson (PDF) </a> (CC-BY-NC-ND)
 	</ul>
-</body></html>
+
+Less than ideal cases (older writing style, and/or  omniscient 3rd person POV):
+	<ul>
+		<li> <a href="http://www.gutenberg.org/ebooks/98">A Tale of Two Cities by Charles Dickens</a> (Public domain)
+		<li> <a href="http://www.gutenberg.org/ebooks/21839">Sense and Sensibility by Jane Austen</a> (Public domain)
+	</ul>
+</body>
+</html>
 
 

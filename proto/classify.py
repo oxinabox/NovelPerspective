@@ -17,8 +17,12 @@ class AbstactCharacterSolver(ABC):
         
     def choose_character(self, raw_text):
         scores, names = self.character_scores(raw_text)
-        self.merge_nicknames(scores,names)
-        return names[np.argmax(scores)]    
+        assert(len(names) == len(scores))
+        if len(names) > 0:
+            self.merge_nicknames(scores,names)
+            return names[np.argmax(scores)]
+        else:
+            return "[No Characters Detected]"
     
     def choose_characters(self, raw_texts):
         return (self.choose_character(text) for text in raw_texts)
@@ -36,7 +40,6 @@ class AbstactCharacterSolver(ABC):
     Merge the scores of characters nicknames into the real name
     """
     def merge_nicknames(self, scores, names):
-        assert(len(names) == len(scores))
         for nickname,truename in self.nicknames2name.items():
             try:
                 ind_nick = names.index(nickname)
@@ -104,6 +107,7 @@ class FirstMentionedSolver(AbstactCharacterSolver):
             if type(cur)==nltk.tree.Tree and cur.label()=='NE':
                 name = get_name(cur)
                 return [1.0], [name] # Just return the first one we find
+        return [],[] # No named entities
 
 class MostMentionedSolver(AbstactCharacterSolver):
     def character_scores(self, raw_text):

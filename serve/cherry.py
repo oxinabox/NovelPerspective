@@ -1,5 +1,7 @@
 from main import *
+from expiring_files import *
 
+import os.path
 import cherrypy
 from cherrypy.lib import static
 
@@ -16,45 +18,6 @@ cherrypy.config.update({
 
 cherrypy.log.screen = True
 
-import os.path
-
-
-##########################
-# This is apparently threadsafe
-# see list of atomic operations: 
-# http://effbot.org/zone/thread-synchronization.htm
-# modifying a list in place is fine
-
-import time
-import tempfile
-
-to_expire=[]
-
-def expiring_temp_file(name_base):
-    ret = tempfile.NamedTemporaryFile(suffix=name_base, delete=False)
-    to_expire.append((time.time(), ret))
-    return ret
-
-import atexit
-@atexit.register
-def check_expires(timeout = 2*60*60): # 2 hours
-    # I don't have to really worry too much about how the deletion happens
-    # User will be well and truely done with the files by the time it does
-    # This is a bit hacky, but I got research work to do.
-
-    now = time.time()
-    keep_after = 0
-    for ii,(create_time, fh) in to_expire:
-        if create_time - now > timeout:
-            fh.delete=True # let it auto delete
-            keep_after = ii
-        else:
-            # Have found first that it not too old
-            break
-    for ii in range(0, keep_after):
-        to_expire.pop(ii)
-
-
 ###################
 
 class App:
@@ -67,10 +30,16 @@ class App:
 
     @cherrypy.expose
     @cherrypy.config(**{'response.stream': True})
-    def upload(self, myFile):
+    def upload(self, myFile, solver_id):
+        if myFile.filename=="":
+            yield "You must upload a file. <br/> Go back and try again."
+            raise StopIteration
+
+
         yield """<html>
         <head>
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+            <title>NovelPerspective: Character Classifications</title>
         </head>
         <body>
         """
@@ -78,16 +47,25 @@ class App:
         disk_fh = expiring_temp_file(myFile.filename)
         disk_fh.write(myFile.file.read())
 
-        yield from main(disk_fh.name)
+        yield from main(disk_fh.name, solver_id)
     
     
     @cherrypy.expose
-    def generate_ebook(self, keep):
-        if type(keep)==str:
-            keep = [int(keep)] # if single argument then does not make lists
+    def generate_ebook(self, keep=None):
+        if keep==None:
+            return "No chapters selected. <br/> Go back and select 1 or more chapters."
+
+        if type(keep)==str: # if single argument then does not make lists
+            keep = [int(keep)]
+        if type(keep)==list: # it is a list of strings
+            keep = [int(kk) for kk in keep]
+        else:
+            raise TypeError("Unxpected type for keep. keep=" + str(keep))
+
 
         book = cherrypy.session['book']
-        outfile = expiring_temp_file(book.title + ".epub")
+        safe_title = os.path.basename(book.title) # avoid directory traveral attacks
+        outfile = expiring_temp_file(safe_title + ".epub")
         rewrite_book(book, keep, outfile.name)
         return static.serve_file(outfile.name, "application/x-download", "attachment")
 

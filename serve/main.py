@@ -2,35 +2,53 @@ import sys
 sys.path.append("../proto")
 
 
+import cherrypy
+import traceback
+import os.path
+
 from book import *
 from sample_chapters import *
 from feature_extraction import *
 from classify import *
 from sklearn.externals import joblib
-import cherrypy
 
-import traceback
 
-def main(filepath):
-    #yield ("<li>Loading Book");
+
+def handle_exception(err, msg):
+    yield "<h3>Error: %s</h3>" % msg
+    yield "<pre> str(err) \n\n\n"
+    yield traceback.print_exc()
+    raise(err)
+
+def load_solver(solver_id):
+    if solver_id == "FirstMentioned":
+        return FirstMentionedSolver()
+    elif solver_id == "MostMentioned":
+        return MostMentionedSolver()
+    else: # assume it is something we have serialized
+        filename = os.path.basename(solver_id) # Avoid directory traversal attacks
+        return joblib.load(os.path.join("../trained_models", filename))
+
+
+
+def main(filepath, solver_id):
     try:
         book = load_book(filepath)
         cherrypy.session['book'] = book
         texts, indexes = load_chapters(book)
     except Exception as err:
-        yield "<h3> Failed to load book</h3>"
-        yield "<pre> str(err) \n\n\n"
-        yield traceback.print_exc()
-        raise(err)
+        handle_exception(err, "Failed to Load Book")
 
-    #yield ("<li>Loading Model");
-    cls = joblib.load("../trained_models/GoT-no-headings.pkl")
-    
-    #yield ("<li>Running Classifier");
-    output_characters = run_classifier(texts, classifier=cls)
-    yield ("<h2>Classification of Chapters</h2>");
-    
-    yield from book_table(output_characters, texts, indexes)
+    try:
+        solver = load_solver(solver_id)
+    except Exception as err:
+        handle_exception(err, "Failed to Load Character Classifier '%s'" % solver_id)
+
+    try:
+        output_characters = solver.choose_characters(texts)
+        yield from book_table(output_characters, texts, indexes)
+    except Exception as err:
+        handle_exception(err, "in Generating Character Classifications")
 
 
 #####################################################################
@@ -41,38 +59,10 @@ def tr(*xs):
     return "<tr>"+guts+"</tr>"
 
 
-filter_code = """
-<script>
-function selectchapters(filterstring) {
-    if (typeof(filterstring)==='undefined') filterstring = $("#txt_filter").val();
-
-    var filterregex = new RegExp(filterstring);
-
-    // uncheck everything
-    $('.keepchapter')
-        .each(function(index) {
-            $(this).attr("checked", false);
-        });
-
-    // check thjose with matching regex
-    $(".charactername")
-        .filter(function() {
-            return $(this).text().match(filterregex);
-        })
-        .each(function(index) {
-            checkbox_id = $(this).attr('for');
-            console.log('#' + checkbox_id);
-            $('#' + checkbox_id)[0].checked =  true;
-        });
-}
-</script>
-<input type="text" id="txt_filter"
-    onkeydown = "if (event.keyCode == 13) selectchapters()"/>
-<button type="button" onclick="selectchapters()">Filter by Regex</button>
-"""
-
 def book_table(output_characters, texts, indexes):
-    yield(filter_code)
+    yield ("<h2>Classification of Chapters</h2>");
+    import filter_script # small python module with a single string (import will only load once vs open-read every time)
+    yield(filter_script.code)
 
     yield("""<form method="get" action="generate_ebook">""")
     yield("<table>")

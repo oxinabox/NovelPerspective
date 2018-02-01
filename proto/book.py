@@ -4,17 +4,43 @@ from bs4 import BeautifulSoup
 import subprocess
 import os.path
 import copy
+import shutil
 
-
-"""Returns path to book in epub format"""
-def convert_book(filepath):
-    basepath, ext = os.path.splitext(filepath)
-    if ext == ".epub":
-        return filepath
+"""
+Converts the ebook at input_filepath, writing the output to output_filepath
+If generate_output yields it one line at a time.
+Otherwise returns None.
+"""
+def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristics=False, split_scenes=False, generate_output=False):
+    input_ext = os.path.splitext(input_filepath)[1]
+    output_ext = os.path.splitext(output_filepath)[1]
+    assert (output_ext == ".epub")
+    if input_ext == ".epub" and not(reprocess_epub):
+        shutil.copyfile(input_filepath, output_filepath)
+        if generate_output:
+            yield "No conversion required"
+        return
     else:
-        targetpath = basepath+".epub"
-        subprocess.check_call(['ebook-convert', filepath, targetpath, '--enable-heuristics'])
-        return targetpath
+        cmd = ['ebook-convert', input_filepath, output_filepath]
+        
+        if heuristics:
+            cmd.append('--enable-heuristics')
+
+        if split_scenes:
+            cmd.append("--chapter")
+            cmd.append(""" "//*[((name()='h1' or name()='h2') and re:test(., '\s*((chapter|book|section|part)\s+)|((prolog|prologue|epilogue)(\s+|$))', 'i')) or @class = 'chapter' or @class = 'scenebreak']" """)
+            # Default chapter break rules, but with '.scenebreak' added
+            cmd.append("--chapter-mark none")
+            # if we are spliting on scenes then don't want to add extra page breaks to for each scene
+        
+        if not(generate_output):
+            subprocess.check_call(cmd)
+        else:
+            with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) as proc:
+                for line in proc.stdout:
+                    yield line
+            
+        
     
         
         
