@@ -30,28 +30,44 @@ class App:
 
     @cherrypy.expose
     @cherrypy.config(**{'response.stream': True})
-    def upload(self, myFile, solver_id):
-        if myFile.filename=="":
+    def upload(self, myFile, **kwargs):
+        yield """<html>
+            <head>
+                <title>NovelPerspective: Preparing Book</title>
+            </head>
+            <body>
+        """
+        
+        if myFile.filename == "":
             yield "You must upload a file. <br/> Go back and try again."
             raise StopIteration
 
 
-        yield """<html>
-        <head>
-            <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-            <title>NovelPerspective: Character Classifications</title>
-        </head>
-        <body>
-        """
         #save it to disk for disk operations
-        disk_fh = expiring_temp_file(myFile.filename)
+        safe_filename = os.path.basename(myFile.filename) # avoid directory traversal attacks
+        disk_fh = expiring_temp_file(safe_filename)
         disk_fh.write(myFile.file.read())
+        
+        out_fh = expiring_temp_file(splitext(safe_filename)[0] + ".epub")
 
-        yield from main(disk_fh.name, solver_id)
-    
-    
+        yield from prepare_book(disk_fh.name, out_fh.name, **kwargs)
+
+
+    @cherrypy.expose
+    @cherrypy.config(**{'response.stream': True})
+    def classify(self):
+        yield """<html>
+                <head>
+                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+                    <title>NovelPerspective: Character Classifications</title>
+                </head>
+                <body>
+        """
+        yield from classify_chapters()
+
     @cherrypy.expose
     def generate_ebook(self, keep=None):
+        # No need for HTML output here, it is a download dialog, unless it is an error
         if keep==None:
             return "No chapters selected. <br/> Go back and select 1 or more chapters."
 
@@ -64,7 +80,7 @@ class App:
 
 
         book = cherrypy.session['book']
-        safe_title = os.path.basename(book.title) # avoid directory traveral attacks
+        safe_title = basename(book.title) # avoid directory traveral attacks
         outfile = expiring_temp_file(safe_title + ".epub")
         rewrite_book(book, keep, outfile.name)
         return static.serve_file(outfile.name, "application/x-download", "attachment")

@@ -21,10 +21,19 @@ This will not be a problem for most retail epubs, but may cause issues e.g. for 
 	<table>
 		<tr>
 			<td>
-				Ebook File: <input type="file" name="myFile">
+				Ebook File: <br/>
+				 <input type="file" name="myFile">
 			</td>
 			<td>
-				Additional Processing:
+				Additional File Preprocessing: <br/>
+				<input type="checkbox" id="rpe" name="reprocess_epub" value="True"/>
+				<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files.">Preprocess ePub</label> <br/>
+
+				<input type="checkbox" id="heu" name="heuristics" value="True"/>
+				<label for="heu" title="Runs heuristics to attempt to improve result">Enable Heuristic Processing</label> <br/>
+
+				<input type="checkbox" id="scn" name="split_scenes" value="True"/>
+				<label for="scn" title="Attempt to split book by scenes rather than by chapter">Split into Scenes</label> <br/>
 			</td>
 		</tr>
 		<tr>

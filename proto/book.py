@@ -31,12 +31,19 @@ def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristi
             cmd.append(""" "//*[((name()='h1' or name()='h2') and re:test(., '\s*((chapter|book|section|part)\s+)|((prolog|prologue|epilogue)(\s+|$))', 'i')) or @class = 'chapter' or @class = 'scenebreak']" """)
             # Default chapter break rules, but with '.scenebreak' added
             cmd.append("--chapter-mark none")
+            print(*cmd)
             # if we are spliting on scenes then don't want to add extra page breaks to for each scene
         
         if not(generate_output):
-            subprocess.check_call(cmd)
+            subprocess.check_call(cmd, shell=true)
         else:
-            with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True) as proc:
+            yield " ".join(cmd) + "\n\n"
+            with subprocess.Popen(cmd, 
+                    stdout=subprocess.PIPE,
+                    #stderr=subprocess.STDOUT, #use same stream
+                    bufsize=1,
+                    universal_newlines=True,
+                    shell=true,) as proc:
                 for line in proc.stdout:
                     yield line
             
@@ -65,7 +72,7 @@ def load_chapters(book):
 
 
 def load_book(filepath):
-    return epub.read_epub(convert_book(filepath))
+    return epub.read_epub(filepath)
     
 
 

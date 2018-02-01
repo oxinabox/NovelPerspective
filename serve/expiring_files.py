@@ -15,7 +15,7 @@ def mark_to_expire(vv):
     return vv
 
 def expiring_temp_file(name_base):
-    vv = tempfile.NamedTemporaryFile(suffix=name_base, delete=False)
+    vv = tempfile.NamedTemporaryFile(suffix=" " + name_base, delete=False)
     mark_to_expire(vv)
     return vv
 

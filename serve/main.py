@@ -4,7 +4,7 @@ sys.path.append("../proto")
 
 import cherrypy
 import traceback
-import os.path
+from os.path import *
 
 from book import *
 from sample_chapters import *
@@ -12,13 +12,46 @@ from feature_extraction import *
 from classify import *
 from sklearn.externals import joblib
 
+#################################################
+
+def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=False, heuristics=False, split_scenes=False):
+    cherrypy.session['solver_id'] = solver_id
+
+    yield ("<h2>Preparing Book</h2>");
+    yield ("Performing any preprocessing/conversion required </br> <hr/> <pre>")
+    print("outfp ", output_filepath)
+    yield from convert_book(input_filepath, output_filepath,
+                            generate_output=True,
+                            reprocess_epub=reprocess_epub,
+                            heuristics=heuristics,
+                            split_scenes=split_scenes)
+
+    cherrypy.session['book'] = load_book(output_filepath)
+    yield "</pre><hr/>"
+    yield """
+    <form method="POST" action="classify">
+        <input type="submit" value="Classify Characters">
+    </form>
+    """
+    
+    yield """<a href="classify"> Classify Characters</a>"""
 
 
-def handle_exception(err, msg):
-    yield "<h3>Error: %s</h3>" % msg
-    yield "<pre> str(err) \n\n\n"
-    yield traceback.print_exc()
-    raise(err)
+
+###############################################
+
+def classify_chapters():
+    book = cherrypy.session['book']
+    texts, indexes = load_chapters(book)
+
+    solver_id = "solver unknown"
+    solver_id = cherrypy.session['solver_id']
+    solver = load_solver(solver_id)
+    
+    output_characters = solver.choose_characters(texts)
+    yield from book_table(output_characters, texts, indexes)
+
+########
 
 def load_solver(solver_id):
     if solver_id == "FirstMentioned":
@@ -28,27 +61,6 @@ def load_solver(solver_id):
     else: # assume it is something we have serialized
         filename = os.path.basename(solver_id) # Avoid directory traversal attacks
         return joblib.load(os.path.join("../trained_models", filename))
-
-
-
-def main(filepath, solver_id):
-    try:
-        book = load_book(filepath)
-        cherrypy.session['book'] = book
-        texts, indexes = load_chapters(book)
-    except Exception as err:
-        handle_exception(err, "Failed to Load Book")
-
-    try:
-        solver = load_solver(solver_id)
-    except Exception as err:
-        handle_exception(err, "Failed to Load Character Classifier '%s'" % solver_id)
-
-    try:
-        output_characters = solver.choose_characters(texts)
-        yield from book_table(output_characters, texts, indexes)
-    except Exception as err:
-        handle_exception(err, "in Generating Character Classifications")
 
 
 #####################################################################
@@ -67,9 +79,10 @@ def book_table(output_characters, texts, indexes):
     yield("""<form method="get" action="generate_ebook">""")
     yield("<table>")
     for index, character, text in zip(indexes, output_characters, texts):
+        example_length = min(len(text)//2, 512)
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
         lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, character)
-        yield tr(chkbox, lbl, text[0:512])
+        yield tr(chkbox, lbl, text[0:example_length])
 
     yield("</table>")
     yield("""<input type="submit" value="Generate ebook with only selected chapters"/>""")
