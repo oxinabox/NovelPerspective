@@ -5,7 +5,7 @@ import os.path
 import cherrypy
 from cherrypy.lib import static
 
-
+app_path   = os.path.abspath(os.path.dirname(__file__))
 cherrypy.config.update({
     'server.socket_port': 7778,
     'server.socket_host': '0.0.0.0',
@@ -13,19 +13,24 @@ cherrypy.config.update({
     'tools.sessions.on': True,
     'tools.sessions.name' : "NovelPerspective_session_id",
     'tools.sessions.expire': 90, # 1.5 hours
-
 })
+app_conf = {
+    '/':
+        { 'tools.staticdir.on':True,
+          'tools.staticdir.dir': os.path.join(app_path),#, "main.css")
+          'tools.staticdir.index' : "indexpage.html"
+        }
+}
 
 cherrypy.log.screen = True
 
 ###################
 
 class App:
-    @cherrypy.expose
-    def index(self):
-        check_expires() # Someone openned the index page it is as good a time as any to check
-        with open("./indexpage.html", "r") as fh:
-            return fh.read()
+#    @cherrypy.expose
+#    def index(self):
+#        with open("./indexpage.html", "r") as fh:
+#            return fh.read()
    
 
     @cherrypy.expose
@@ -37,6 +42,7 @@ class App:
             </head>
             <body>
         """
+        check_expires() # Someone added something new, is as good a time as any to check
         
         if myFile.filename == "":
             yield "You must upload a file. <br/> Go back and try again."
@@ -87,4 +93,4 @@ class App:
 
 
 if __name__ == '__main__':
-    cherrypy.quickstart(App())
+    cherrypy.quickstart(App(), '/', app_conf)
