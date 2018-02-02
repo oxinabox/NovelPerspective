@@ -8,17 +8,15 @@ import shutil
 
 """
 Converts the ebook at input_filepath, writing the output to output_filepath
-If generate_output yields it one line at a time.
-Otherwise returns None.
+Lazy/Async, yields outputs one line at a time til done.
 """
-def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristics=False, split_scenes=False, generate_output=False):
+def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristics=False, split_scenes=False):
     input_ext = os.path.splitext(input_filepath)[1]
     output_ext = os.path.splitext(output_filepath)[1]
     assert (output_ext == ".epub")
     if input_ext == ".epub" and not(reprocess_epub):
         shutil.copyfile(input_filepath, output_filepath)
-        if generate_output:
-            yield "No conversion required"
+        yield "No conversion required"
         return
     else:
         cmd = ['ebook-convert', input_filepath, output_filepath]
@@ -27,25 +25,28 @@ def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristi
             cmd.append('--enable-heuristics')
 
         if split_scenes:
-            cmd.append("--chapter")
+            cmd.append("--chapter")  # Default chapter break rules, but with '.scenebreak' added :
             cmd.append(""" "//*[((name()='h1' or name()='h2') and re:test(., '\s*((chapter|book|section|part)\s+)|((prolog|prologue|epilogue)(\s+|$))', 'i')) or @class = 'chapter' or @class = 'scenebreak']" """)
-            # Default chapter break rules, but with '.scenebreak' added
-            cmd.append("--chapter-mark none")
-            print(*cmd)
-            # if we are spliting on scenes then don't want to add extra page breaks to for each scene
+            # Don't use shlex.quote as that breaks other things so calibre can not parse the above
+         
+            #Note: do not change --chapter-mark settings (need to leave to normal page-break)
+            # else it will fail to actually split the chapters into distinct items in the epub file
+            
         
-        if not(generate_output):
-            subprocess.check_call(cmd, shell=true)
-        else:
-            yield " ".join(cmd) + "\n\n"
-            with subprocess.Popen(cmd, 
-                    stdout=subprocess.PIPE,
-                    #stderr=subprocess.STDOUT, #use same stream
-                    bufsize=1,
-                    universal_newlines=True,
-                    shell=true,) as proc:
-                for line in proc.stdout:
-                    yield line
+        cmd =  " ".join(cmd)
+        yield cmd + "\n\n"
+        with subprocess.Popen(cmd, 
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT, #use same stream
+                bufsize=1,
+                universal_newlines=True,
+                shell=True,
+                ) as proc:
+            for line in proc.stdout:
+                yield line
+            if proc.wait() != 0:
+                raise subprocess.CalledProcessError(proc.returncode, cmd)
+            yield ""
             
         
     

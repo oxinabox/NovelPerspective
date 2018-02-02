@@ -12,6 +12,19 @@ from feature_extraction import *
 from classify import *
 from sklearn.externals import joblib
 
+
+################################################
+
+def handle_exception(context_msg, exc_info):
+    traceback.print_exception(*exc_info)
+    print(traceback.print_exc())
+    yield "\n\n<h3>Error: %s</h3>" % context_msg
+    yield "<pre>"
+    yield "\n".join(traceback.format_exception(*exc_info))
+    yield "</pre>"
+    err = exc_info[1]
+    raise(err)
+
 #################################################
 
 def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=False, heuristics=False, split_scenes=False):
@@ -19,38 +32,45 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 
     yield ("<h2>Preparing Book</h2>");
     yield ("Performing any preprocessing/conversion required </br> <hr/> <pre>")
-    print("outfp ", output_filepath)
-    yield from convert_book(input_filepath, output_filepath,
-                            generate_output=True,
-                            reprocess_epub=reprocess_epub,
-                            heuristics=heuristics,
-                            split_scenes=split_scenes)
+    try:
+        yield from convert_book(input_filepath, output_filepath,
+                                reprocess_epub=reprocess_epub,
+                                heuristics=heuristics,
+                                split_scenes=split_scenes)
+    except Exception:
+        yield from handle_exception("when preparing book", sys.exc_info())
 
-    cherrypy.session['book'] = load_book(output_filepath)
     yield "</pre><hr/>"
+
+    try:
+        cherrypy.session['book'] = load_book(output_filepath)
+    except Exception:
+        yield from handle_exception("when loading book", sys.exc_info())
+
     yield """
     <form method="POST" action="classify">
         <input type="submit" value="Classify Characters">
     </form>
     """
-    
-    yield """<a href="classify"> Classify Characters</a>"""
-
 
 
 ###############################################
 
 def classify_chapters():
-    book = cherrypy.session['book']
-    texts, indexes = load_chapters(book)
+    try:
+        book = cherrypy.session['book']
+        texts, indexes = load_chapters(book)
 
-    solver_id = "solver unknown"
-    solver_id = cherrypy.session['solver_id']
-    solver = load_solver(solver_id)
-    
-    output_characters = solver.choose_characters(texts)
-    yield from book_table(output_characters, texts, indexes)
+        solver_id = "solver unknown"
+        solver_id = cherrypy.session['solver_id']
+        solver = load_solver(solver_id)
+        
+        output_characters = solver.choose_characters(texts)
+        yield from book_table(output_characters, texts, indexes)
 
+    except Exception:
+        yield from handle_exception("when classifying chapters", sys.exc_info())
+        
 ########
 
 def load_solver(solver_id):
@@ -79,12 +99,13 @@ def book_table(output_characters, texts, indexes):
     yield("""<form method="get" action="generate_ebook">""")
     yield("<table>")
     for index, character, text in zip(indexes, output_characters, texts):
-        example_length = min(len(text)//2, 512)
+        disp_name = character[:64] # For keeping the display vaguely sane
+        text_segment = text[:min(len(text)//2, 512)]
+
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
-        lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, character)
-        yield tr(chkbox, lbl, text[0:example_length])
+        lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, disp_name)
+        yield tr(chkbox, lbl, text_segment)
 
     yield("</table>")
     yield("""<input type="submit" value="Generate ebook with only selected chapters"/>""")
     yield("</form>")
-    

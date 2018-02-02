@@ -6,13 +6,16 @@
 <h1>Novel Perspective</h1>
 <p>This tool detects the main/point-of-view character for each chapter of a book, and allows you create a copy of the ebook with just the chapters about the characters you are interested in.</p>
 
-
-
 <p>Please upload the novel to analyse, and restructure.<p>
-<p>Epub format is preferred. <br/>
-Other formats will attempt to be coverted using <a href="https://manual.calibre-ebook.com/generated/en/ebook-convert.html">Calibre</a>. This may cause a noticable delay, and may have issues.<br/>
-If the epub file does not divide into chapters this will not work at all.<br/>
-This will not be a problem for most retail epubs, but may cause issues e.g. for files converted from PDF.
+
+<p>ePub format is preferred. <br/>
+<a href="https://manual.calibre-ebook.com/generated/en/ebook-convert.html">Calibre</a> is used to convert other formats,
+and is also used to preform any of the additional preprocessing options on the right.
+
+<p>
+Unusual formatting/production of some ebooks may cause issues.
+Enabling ePub preprocessing may help for ePub files.
+There should be few problems with modern retail epubs, but may cause issues e.g. for files converted from PDF.
 </p>
 
 <!----------------------------------- -->
@@ -27,7 +30,7 @@ This will not be a problem for most retail epubs, but may cause issues e.g. for 
 			<td>
 				Additional File Preprocessing: <br/>
 				<input type="checkbox" id="rpe" name="reprocess_epub" value="True"/>
-				<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files.">Preprocess ePub</label> <br/>
+				<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files. For formats other than ePub this will always occur during conversion.">Preprocess ePub</label> <br/>
 
 				<input type="checkbox" id="heu" name="heuristics" value="True"/>
 				<label for="heu" title="Runs heuristics to attempt to improve result">Enable Heuristic Processing</label> <br/>
@@ -41,7 +44,7 @@ This will not be a problem for most retail epubs, but may cause issues e.g. for 
 				Character Classification System: <br/>
 				<input type="radio" id="solver1" name="solver_id" value="FirstMentioned">
 				<label for="solver1"
-				 title="Very good if the book actually starts each chapter with the name of the main character e.g. as the chapter title. Very bad otherwise.">First Mentioned</label>
+				 title="Potentially good if the book actually starts each chapter with the name of the main character. However, even then may fail due to the named entity recognizer incorrectly detecting Chapter as an entity name. A weak baseline.">First Mentioned</label>
 
 				<input type="radio" id="solver2" name="solver_id" value="MostMentioned">
 				<label for="solver2" title="Strong baseline">Most Mentioned</label>
@@ -73,7 +76,7 @@ This application does not store your uploaded books, and will only ever display 
 <h3> You may like to try this on: </h3>
 Ideal cases (modern writing style, limitted 3rd person POV):
 	<ul>
-		<li> <a href="https://brandonsanderson.com/books/warbreaker/warbreaker/warbreaker-rights-and-downloads/">Warbreaker by Brandon Sanderson (PDF) </a> (CC-BY-NC-ND)
+		<li> <a href="https://brandonsanderson.com/books/warbreaker/warbreaker/warbreaker-rights-and-downloads/">Warbreaker by Brandon Sanderson (PDF) </a> (CC-BY-NC-ND). Using the "Split into Scenes" option is necessary as it mixes POVs with-in chapters.
 	</ul>
 
 Less than ideal cases (older writing style, and/or  omniscient 3rd person POV):
