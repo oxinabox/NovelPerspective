@@ -3,7 +3,7 @@
 	<title>NovelPerspective</title>
     <link rel="stylesheet" href="main.css" type="text/css" />
 </head>
-<body>
+<body class="infopage">
 <h1>Novel Perspective</h1>
 <p>This tool detects the main/point-of-view character for each chapter of a book, and allows you create a copy of the ebook with just the chapters about the characters you are interested in.</br>
 Please upload the novel to analyse, and restructure.<p>
@@ -11,6 +11,7 @@ Please upload the novel to analyse, and restructure.<p>
 <p>ePub format is preferred. <br/>
 <a href="https://manual.calibre-ebook.com/generated/en/ebook-convert.html">Calibre</a> is used to convert other formats,
 and is also used to preform any of the additional preprocessing options on the right.
+For full control you can run all these functions locally then just upload an ePub.
 
 <p>
 Unusual formatting/production of some ebooks may cause issues.
@@ -49,13 +50,16 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 				<input type="radio" id="solver2" name="solver_id" value="MostMentioned">
 				<label for="solver2" title="Strong baseline">Most Mentioned</label>
 
-				<input type="radio" id="solver3" name="solver_id" value="GoT-no-headings.pkl" checked="checked">
-				<label for="solver3">Machine Learning Based</label>
+				<input type="radio" id="solver3" name="solver_id" value="classic_comb.pkl" checked="checked">
+				<label for="solver3" title="ML model trained on all the data.">Machine Learning Based</label>
+			
 			</td>
 		</tr>
 		<tr>
 			<td>
-				<input type="submit" value="Upload">
+				<input type="submit" value="Upload"
+				title="This should be fairly fast, streaming content as it is computed. If it is slow, and then loads all at once, your web-browser, or somewhere else between you and my server, has decided to not handle chunked-encoding in chunks."
+				>
 			</td>
 		</tr>
 	</table>
@@ -76,16 +80,21 @@ This application does not store your uploaded books, and will only ever display 
 
 
 <h3> You may like to try this on: </h3>
-Ideal cases (modern writing style, limitted 3rd person POV):
+Good cases (modern writing style, limitted 3rd person POV):
 	<ul>
 		<li> <a href="https://brandonsanderson.com/books/warbreaker/warbreaker/warbreaker-rights-and-downloads/">Warbreaker by Brandon Sanderson (PDF) </a> (CC-BY-NC-ND). Using the "Split into Scenes" option is necessary as it mixes POVs with-in chapters.
 	</ul>
 
-Less than ideal cases (older writing style, and/or  omniscient 3rd person POV):
+Poor cases (older writing style, and/or  omniscient 3rd person POV):
 	<ul>
 		<li> <a href="http://www.gutenberg.org/ebooks/98">A Tale of Two Cities by Charles Dickens</a> (Public domain)
 		<li> <a href="http://www.gutenberg.org/ebooks/21839">Sense and Sensibility by Jane Austen</a> (Public domain)
 	</ul>
+
+
+<footer>
+	Made by <a href="http://white.ucc.asn.au"> Lyndon White <a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a> .
+</footer>
 </body>
 </html>
 

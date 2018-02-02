@@ -16,10 +16,12 @@ from sklearn.externals import joblib
 ################################################
 
 def handle_exception(context_msg, exc_info):
+    print("session_id: ", cherrypy.session.id)
     traceback.print_exception(*exc_info)
     print(traceback.print_exc())
     yield "\n\n<h3>Error: %s</h3>" % context_msg
-    yield "<pre>"
+    yield """<a href="/">Return to start page<a> <br> <hr>"""
+    yield """<pre class="errorlog">"""
     yield "\n".join(traceback.format_exception(*exc_info))
     yield "</pre>"
     err = exc_info[1]
@@ -30,8 +32,9 @@ def handle_exception(context_msg, exc_info):
 def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=False, heuristics=False, split_scenes=False):
     cherrypy.session['solver_id'] = solver_id
 
-    yield ("<h2>Preparing Book</h2>");
-    yield ("Performing any preprocessing/conversion required </br> <hr/> <pre>")
+    yield "<h2>Preparing Book</h2>"
+    yield "Performing any preprocessing/conversion required </br>"
+    yield """<hr/> <pre class="readout">"""
     try:
         yield from convert_book(input_filepath, output_filepath,
                                 reprocess_epub=reprocess_epub,
@@ -44,6 +47,10 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 
     try:
         cherrypy.session['book'] = load_book(output_filepath)
+        cherrypy.session.save()
+        assert(cherrypy.session['book'] != None)
+        print("session_id: ", cherrypy.session.id)
+
     except Exception:
         yield from handle_exception("when loading book", sys.exc_info())
 
@@ -92,7 +99,9 @@ def tr(*xs):
 
 
 def book_table(output_characters, texts, indexes):
-    yield ("<h2>Classification of Chapters</h2>");
+    yield "<h2>Classification of Chapters</h2>"
+    yield """<a href="/">Return to start page<a> <br> <hr>""" 
+
     import filter_script # small python module with a single string (import will only load once vs open-read every time)
     yield(filter_script.code)
 
@@ -100,7 +109,7 @@ def book_table(output_characters, texts, indexes):
     yield("<table>")
     for index, character, text in zip(indexes, output_characters, texts):
         disp_name = character[:64] # For keeping the display vaguely sane
-        text_segment = text[:min(len(text)//2, 512)]
+        text_segment = text[:512]
 
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
         lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, disp_name)

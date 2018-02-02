@@ -12,7 +12,10 @@ cherrypy.config.update({
     'request.show_traceback': True,
     'tools.sessions.on': True,
     'tools.sessions.name' : "NovelPerspective_session_id",
-    'tools.sessions.expire': 90, # 1.5 hours
+    'tools.sessions.timeout': 90, # 1.5 hours
+    'tools.sessions.locking': 'early',
+#    'tools.sessions.storage_type': "file",
+#    'tools.sessions.storage_path' : "/tmp/sessions",
 })
 app_conf = {
     '/':
@@ -25,6 +28,9 @@ app_conf = {
 cherrypy.log.screen = True
 
 ###################
+
+footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White <a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a>. </footer>"""
+
 
 class App:
 #    @cherrypy.expose
@@ -39,8 +45,9 @@ class App:
         yield """<html>
             <head>
                 <title>NovelPerspective: Preparing Book</title>
+                <link rel="stylesheet" href="main.css" type="text/css" />
             </head>
-            <body>
+            <body class="infopage">
         """
         check_expires() # Someone added something new, is as good a time as any to check
         
@@ -57,6 +64,7 @@ class App:
         out_fh = expiring_temp_file(splitext(safe_filename)[0] + ".epub")
 
         yield from prepare_book(disk_fh.name, out_fh.name, **kwargs)
+        yield footer
 
 
     @cherrypy.expose
@@ -65,11 +73,13 @@ class App:
         yield """<html>
                 <head>
                     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+                    <link rel="stylesheet" href="main.css" type="text/css" />
                     <title>NovelPerspective: Character Classifications</title>
                 </head>
                 <body>
         """
         yield from classify_chapters()
+        yield footer
 
     @cherrypy.expose
     def generate_ebook(self, keep=None):

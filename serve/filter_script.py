@@ -3,7 +3,7 @@ code = """
     function selectchapters(filterstring) {
         if (typeof(filterstring)==='undefined') filterstring = $("#txt_filter").val();
 
-        var filterregex = new RegExp(filterstring);
+        var filterregex = new RegExp(filterstring, "i");
 
         // uncheck everything
         $('.keepchapter')

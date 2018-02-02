@@ -15,6 +15,7 @@ class AbstactCharacterSolver(ABC):
     def __init__(self, nicknames2name=dict()):
         self.nicknames2name = nicknames2name
         
+        
     def choose_character(self, raw_text):
         scores, names = self.character_scores(raw_text)
         assert(len(names) == len(scores))
@@ -80,8 +81,12 @@ class MLCharacterSolver(AbstactCharacterSolver):
     def character_scores(self, raw_text):
         names, feature_vectors, vector_keys = self.feature_extractor(raw_text)
         assert(len(names) == len(feature_vectors))
-        scores = self.classifier.predict_proba(feature_vectors)[:,1] #second index is positive class
-        return scores, names
+        if len(names) > 0:
+            scores = self.classifier.predict_proba(feature_vectors)[:,1] #second index is positive class
+            return scores, names
+        else:
+            return [],[]
+            
 
     def train(self, texts, reference_characters):
         Xs = [] # Feature vectors
