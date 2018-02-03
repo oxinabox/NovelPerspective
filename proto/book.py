@@ -5,6 +5,7 @@ import subprocess
 import os.path
 import copy
 import shutil
+import shlex
 
 """
 Converts the ebook at input_filepath, writing the output to output_filepath
@@ -19,7 +20,9 @@ def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristi
         yield "No conversion required"
         return
     else:
-        cmd = ['ebook-convert', input_filepath, output_filepath]
+        cmd = ['ebook-convert',
+               shlex.quote(input_filepath),
+               shlex.quote(output_filepath)]
         
         if heuristics:
             cmd.append('--enable-heuristics')
