@@ -98,6 +98,10 @@ class MLCharacterSolver(AbstactCharacterSolver):
 
         Xs = np.asarray(Xs) 
         Ys = np.asarray(Ys)
+        assert Xs.shape[0]==Ys.shape[0]
+        assert len(Xs.shape)==2, "Xs.shape = "+str(Xs.shape)
+        
+        assert Xs.shape[1]>2, "Xs.shape[1] = "+str(Xs.shape[1])
 
         self.classifier.fit(Xs,Ys)
         return self
