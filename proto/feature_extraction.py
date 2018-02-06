@@ -156,7 +156,7 @@ def word_embedding(word):
     return fasttext_model().get_word_vector("word")
 
 
-def get_embedding_features(raw_text, half_window_len=1):
+def get_embedding_features(raw_text, half_window_len=1, include_occur_count_statistics=False):
     full_window_len = 2*half_window_len+1
     ne_words = (half_window_len*[PADDING_TOKEN] 
                 +ne_preprocess(raw_text) 
@@ -174,11 +174,25 @@ def get_embedding_features(raw_text, half_window_len=1):
             vec = feature_vecs[name]
             vec += np.hstack(map(word_embedding, window))
             
+    number_named_entities = len(overall_counts)
     #Final Percent processing, and flattening
     names=[]
     vectors=[]
-    for (name, count) in overall_counts.most_common():
+    for rank,(name, count) in enumerate(overall_counts.most_common(),1):
+        
+        vec = feature_vecs[name]
         mowe_vec = feature_vecs[name]/count
+        
+        if include_occur_count_statistics:
+            occur_stats = [
+                count, #vec["occur_count"]
+                100*count/sum(overall_counts.values()), #vec["occur_percent"]
+                rank, #vec["occur_rank"]
+                100*rank/number_named_entities #vec["occur_rank_percent"]
+            ]
+            mowe_vec = np.hstack([occur_stats, mowe_vec])
+              
+        
         vectors.append(mowe_vec)
         names.append(name)
     
