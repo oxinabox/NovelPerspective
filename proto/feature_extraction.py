@@ -30,7 +30,7 @@ from functools import reduce, lru_cache
 
 ##############
 
-@lru_cache(maxsize=None)
+@lru_cache(maxsize=10^5)
 def ne_preprocess(raw_text, flatten=True):
     sents = nltk.sent_tokenize(raw_text)
     tokenised_sents = [nltk.word_tokenize(sent) for sent in sents]
@@ -156,8 +156,8 @@ def word_embedding(word):
     return fasttext_model().get_word_vector("word")
 
 
-def get_embedding_features(raw_text, half_window_len=1, include_occur_count_statistics=False):
-    full_window_len = 2*half_window_len+1
+def get_embedding_features(raw_text, half_window_len=5, include_NE_embedding=False, include_occur_count_statistics=False):
+    full_window_len = 2*half_window_len + include_NE_embedding
     ne_words = (half_window_len*[PADDING_TOKEN] 
                 +ne_preprocess(raw_text) 
                 + half_window_len*[PADDING_TOKEN])
@@ -167,6 +167,9 @@ def get_embedding_features(raw_text, half_window_len=1, include_occur_count_stat
     feature_vecs = defaultdict(lambda: np.zeros(full_window_len*_fasttext_embedding_dim))   
     for ii, window in enumerate(nwise(full_window_len, ne_words)):
         cur=window[half_window_len] # center
+        if not(include_NE_embedding):
+            window = np.hstack([window[:half_window_len], window[-half_window_len:]])
+            
         if type(cur)==nltk.tree.Tree and cur.label()=='NE':
             name = get_name(cur)
             overall_counts[name]+=1
