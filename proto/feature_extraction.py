@@ -56,6 +56,14 @@ def get_tag(item):
         return item[1]
     else:
         assert(type(item) in [tuple, nltk.tree.Tree])
+        
+def get_word(item):
+    if type(item)==nltk.tree.Tree:
+        return get_name(item)
+    elif type(item)==tuple:
+        return item[0]
+    else:
+        assert(type(item) in [tuple, nltk.tree.Tree])
 
 #########################
 
@@ -86,6 +94,7 @@ def FeatureVec():
 """
 Returns a list of names, feature_vectors, and a definition of the feature vector keys
 """
+@lru_cache(maxsize=10^5)
 def get_feature_vectors(raw_text):
     
     ne_words = 2*[PADDING_TOKEN] + ne_preprocess(raw_text) + 2*[PADDING_TOKEN]
@@ -142,7 +151,6 @@ def get_feature_vectors(raw_text):
 import fastText # from https://github.com/facebookresearch/fastText/
 
 
-
 _fasttext_embedding_dim = 300
 _fasttext_path = "./wiki.en.bin"
 _fasttext_model=None #Lazy load
@@ -152,35 +160,48 @@ def fasttext_model():
         _fasttext_model = fastText.load_model(_fasttext_path)
     return _fasttext_model
 
+
 def word_embedding(word):
-    return fasttext_model().get_word_vector("word")
+    return fasttext_model().get_word_vector(word)
 
-
-def get_embedding_features(raw_text, half_window_len=5, include_NE_embedding=False, include_occur_count_statistics=False):
-    full_window_len = 2*half_window_len + include_NE_embedding
+@lru_cache(maxsize=10^5)
+def get_embedding_features(raw_text, 
+                           half_window_len=5, 
+                           include_NE_embedding=False, 
+                           include_occur_count_statistics=False):
+    
+    
+    full_window_len = 2*half_window_len+1
     ne_words = (half_window_len*[PADDING_TOKEN] 
                 +ne_preprocess(raw_text) 
                 + half_window_len*[PADDING_TOKEN])
     
     overall_counts = Counter()
-    
-    feature_vecs = defaultdict(lambda: np.zeros(full_window_len*_fasttext_embedding_dim))   
-    for ii, window in enumerate(nwise(full_window_len, ne_words)):
+    vec_len = (2*half_window_len+include_NE_embedding) * _fasttext_embedding_dim
+    feature_vecs = defaultdict(lambda: np.zeros(vec_len))   
+    for window in nwise(full_window_len, ne_words):
         cur=window[half_window_len] # center
-        if not(include_NE_embedding):
-            window = np.hstack([window[:half_window_len], window[-half_window_len:]])
-            
         if type(cur)==nltk.tree.Tree and cur.label()=='NE':
             name = get_name(cur)
             overall_counts[name]+=1
-            
+
+            wembs = [word_embedding(get_word(ww))
+                                  for (wi,ww) in enumerate(window)
+                                  if include_NE_embedding or wi!=half_window_len 
+                                  #i.e. if should skip cur, then skip based on its index
+                              ]
+               
             vec = feature_vecs[name]
-            vec += np.hstack(map(word_embedding, window))
+            vec += np.hstack(wembs)
             
-    number_named_entities = len(overall_counts)
+
     #Final Percent processing, and flattening
     names=[]
     vectors=[]
+    number_named_entities = len(overall_counts)
+    if number_named_entities==0:
+        return [],[],"WordEmbeddings"
+    
     for rank,(name, count) in enumerate(overall_counts.most_common(),1):
         
         vec = feature_vecs[name]
@@ -198,6 +219,7 @@ def get_embedding_features(raw_text, half_window_len=5, include_NE_embedding=Fal
         
         vectors.append(mowe_vec)
         names.append(name)
+    
     
     return names, np.vstack(vectors), "WordEmbeddings"
     
