@@ -94,7 +94,7 @@ def FeatureVec():
 """
 Returns a list of names, feature_vectors, and a definition of the feature vector keys
 """
-@lru_cache(maxsize=10^5)
+#@lru_cache(maxsize=10^5)
 def get_feature_vectors(raw_text):
     
     ne_words = 2*[PADDING_TOKEN] + ne_preprocess(raw_text) + 2*[PADDING_TOKEN]
@@ -164,9 +164,9 @@ def fasttext_model():
 def word_embedding(word):
     return fasttext_model().get_word_vector(word)
 
-@lru_cache(maxsize=10^5)
+#@lru_cache(maxsize=10^5)
 def get_embedding_features(raw_text, 
-                           half_window_len=5, 
+                           half_window_len=1, 
                            include_NE_embedding=False, 
                            include_occur_count_statistics=False):
     
