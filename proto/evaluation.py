@@ -67,18 +67,18 @@ nicknames2name_comb = {
 }
 
 with open("../flat_data/SA.json","r") as fh:
-    ann_SA = np.asarray(json.load(fh))
+    ann_SA = np.asarray(json.load(fh), dtype='object')
     
 
     
 with open("../flat_data/asoif01-04.json","r") as fh:
-    ann_ASOIAF = np.asarray(json.load(fh))
+    ann_ASOIAF = np.asarray(json.load(fh), dtype='object')
     
     
 with open("../flat_data/dregs01.json","r") as fh:
-    ann_SOC = np.asarray(json.load(fh))
+    ann_SOC = np.asarray(json.load(fh), dtype='object')
 with open("../flat_data/dregs02.json","r") as fh:
-    ann_SOC = np.hstack([ann_SOC, np.asarray(json.load(fh))])
+    ann_SOC = np.hstack([ann_SOC, np.asarray(json.load(fh), dtype='object')])
 
 ann_comb = np.hstack([ann_SOC, ann_ASOIAF, ann_SA])
 

@@ -1,0 +1,8 @@
+cherrypy
+xgboost
+scikit-learn
+pandas
+ebooklib
+beautifulsoup4
+nltk
+# fastText, has to be installed manually following https://github.com/facebookresearch/fastText/cd 
