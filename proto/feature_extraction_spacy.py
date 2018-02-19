@@ -2,10 +2,10 @@ import spacy
 from collections import *
 import numpy as np
 
-en_nlp = spacy.load('en_core_web_sm', disable=['parser'])
+#en_nlp = spacy.load('en_core_web_sm', disable=['parser'])
+en_nlp = spacy.load('en_core_web_lg', disable=['parser'])
 
-
-# TODO: to go really face with spacy need to use pipe,
+# TODO: to go really fast with spacy need to use pipe,
 # that is applied to a bunch of documents at a time,
 # and returns their enriched forms using a generator
 
@@ -108,3 +108,45 @@ def get_spacy_feature_vectors(raw_text):
         names.append(name)
     
     return names, np.asarray(vectors), SpacyFeatureVec_keys
+
+
+#####################
+
+_spacy_embedding_dim = 300
+def get_spacy_embedding_features(raw_text):
+        
+    enriched_doc = enrich_text(raw_text)
+    
+    overall_counts = Counter()
+    vec_len = 2 * _spacy_embedding_dim
+    feature_vecs = defaultdict(lambda: np.zeros(vec_len))
+    for ent in enriched_doc.ents:
+        if not(is_character_NE(ent)):
+            continue
+            
+        name = ent.text.strip()
+        overall_counts[name]+=1
+
+        vec = feature_vecs[name]
+        if ent.start > 0:
+            before = enriched_doc[ent.start-1]
+            vec[:_spacy_embedding_dim]+= before.vector
+        if ent.end < len(enriched_doc): #end is index of first token outside the named entity
+            after = enriched_doc[ent.end]
+            vec[_spacy_embedding_dim:]+= after.vector
+          
+    #Final Percent processing, and flattening
+    names=[]
+    vectors=[]
+    number_named_entities = len(overall_counts)
+    if number_named_entities==0:
+        return [],[],"WordEmbeddings"
+    
+    for rank,(name, count) in enumerate(overall_counts.most_common(),1):
+        mowe_vec = feature_vecs[name]/count
+        
+        vectors.append(mowe_vec)
+        names.append(name)
+    
+    
+    return names, np.vstack(vectors), "WordEmbeddings"

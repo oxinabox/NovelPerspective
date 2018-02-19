@@ -1,0 +1,7 @@
+Test Set,Method,Train Set,Acc
+ASIAF,ML Classical Features,SOC and SA,0.953125
+ASIAF,ML Hybrid Features,SOC and SA,0.953125
+ASIAF,ML Word Emb. Features,SOC and SA,0.921875
+SOC,ML Classical Features,ASIAF and SA,0.8241758241758241
+SOC,ML Hybrid Features,ASIAF and SA,0.8571428571428571
+SOC,ML Word Emb. Features,ASIAF and SA,0.9340659340659341

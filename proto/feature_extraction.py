@@ -221,6 +221,6 @@ def get_embedding_features(raw_text,
         names.append(name)
     
     
-    return names, np.vstack(vectors), "WordEmbeddings"
+    return names, np.vstack(vectors), vec_len*["WordEmbeddings"]
     
     
