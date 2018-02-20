@@ -21,7 +21,6 @@ Unusual formatting/production of some ebooks may cause issues.
 Enabling ePub preprocessing may help for ePub files.
 There should be few problems with modern retail epubs, but may cause issues e.g. for files converted from PDF.
 </p>
-
 <!----------------------------------- -->
 <form class="largeform" enctype="multipart/form-data" action="upload" method="post">
 	<h3>Please upload the ebook</h3>
@@ -60,7 +59,7 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 		</tr>
 		<tr>
 			<td>
-				<input type="submit" value="Upload"
+				<input class="mainbutton" type="submit" value="Upload"
 				title="This should be fairly fast, streaming content as it is computed. If it is slow, and then loads all at once, your web-browser, or somewhere else between you and my server, has decided to not handle chunked-encoding in chunks."
 				>
 			</td>
@@ -69,15 +68,21 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 </form>
 <!----------------------------------- -->
 
+<p>
+If your web-browser does not render "Transfer-Encoding: chunked" web-pages as the chunks arrive,
+this web-app may appear very slow as you will be waiting for all the computation to complete before output is shown (some recent versions of firefox suffer from this).
+If your web-browser is renders content as it arrives (like Chrome), then you'll see the results as they are computed.
+</p>
+
 <p><strong>Notice:</strong>
 Not violating copyright is your responsibility. </br>
-In some jurisdictions you are allowed to modify media you own, so long as you do not distribute the modified form.<br>
-It is also allowed under the Creative Commons No Derivatives licenses.<br>
-(the above does not consitute legal advise.).
+In some jurisdictions you are allowed to modify media you own, so long as you do not distribute the modified form. It is also allowed under the Creative Commons No Derivatives licenses.<br>
+(the above is merely an expression of my understanding, it does not consitute legal advise.).
 </p>
 
 <p>
 This application does not store your uploaded books, and will only ever display the download link to you.
+Download links will expire after a short period of time.
 </p>
 
 
