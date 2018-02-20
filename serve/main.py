@@ -33,7 +33,7 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 
     yield "<h2>Preparing Book</h2>"
     yield "Performing any preprocessing/conversion required </br>"
-    yield """<hr/> <pre class="readout">"""
+    yield """<pre class="readout">"""
     try:
         yield from convert_book(input_filepath, output_filepath,
                                 reprocess_epub=reprocess_epub,
@@ -42,7 +42,7 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
     except Exception:
         yield from handle_exception("when preparing book", sys.exc_info())
 
-    yield "</pre><hr/>"
+    yield "</pre>"
 
     try:
         cherrypy.session['book'] = load_book(output_filepath)
@@ -55,7 +55,7 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 
     yield """
     <form method="POST" action="classify">
-        <input type="submit" value="Classify Characters">
+        <input class="mainbutton" type="submit" value="Classify Characters">
     </form>
     """
 
