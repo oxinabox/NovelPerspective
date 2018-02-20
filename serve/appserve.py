@@ -1,21 +1,25 @@
+#! /usr/bin/python3
+import sys
+from os.path import *
+app_path   = abspath(dirname(__file__))
+sys.path.append(app_path)
+
 from main import *
 from expiring_files import *
 
-import os.path
 import cherrypy
 from cherrypy.lib import static
 
-app_path   = os.path.abspath(os.path.dirname(__file__))
 cherrypy.config.update({
-    'server.socket_port': 7778,
+#    'server.socket_port': 7778,
     'server.socket_host': '0.0.0.0',
     'request.show_traceback': True,
     'tools.sessions.on': True,
     'tools.sessions.name' : "NovelPerspective_session_id",
     'tools.sessions.timeout': 90, # 1.5 hours
     'tools.sessions.locking': 'early',
-#    'tools.sessions.storage_type': "file",
-#    'tools.sessions.storage_path' : "/tmp/sessions",
+    'tools.sessions.storage_type': "file",
+    'tools.sessions.storage_path' : "/tmp",
 })
 app_conf = {
     '/':
@@ -33,12 +37,6 @@ footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White <a>
 
 
 class App:
-#    @cherrypy.expose
-#    def index(self):
-#        with open("./indexpage.html", "r") as fh:
-#            return fh.read()
-   
-
     @cherrypy.expose
     @cherrypy.config(**{'response.stream': True})
     def upload(self, myFile, **kwargs):
@@ -50,7 +48,7 @@ class App:
             <body class="infopage">
         """
         check_expires() # Someone added something new, is as good a time as any to check
-        
+
         if myFile.filename == "":
             yield "You must upload a file. <br/> Go back and try again."
             raise StopIteration
@@ -60,7 +58,7 @@ class App:
         safe_filename = os.path.basename(myFile.filename) # avoid directory traversal attacks
         disk_fh = expiring_temp_file(safe_filename)
         disk_fh.write(myFile.file.read())
-        
+
         out_fh = expiring_temp_file(splitext(safe_filename)[0] + ".epub")
 
         yield from prepare_book(disk_fh.name, out_fh.name, **kwargs)
@@ -101,6 +99,15 @@ class App:
         rewrite_book(book, keep, outfile.name)
         return static.serve_file(outfile.name, "application/x-download", "attachment")
 
+    @cherrypy.expose
+    def kill(self):
+        exit()
+
+##############
+
+def application(environ, start_response):
+    cherrypy.tree.mount(App(), "/", app_conf)
+    return cherrypy.tree(environ, start_response)
 
 if __name__ == '__main__':
     cherrypy.quickstart(App(), '/', app_conf)

@@ -1,13 +1,12 @@
 import sys
-sys.path.append("../proto")
-
+import os.path
+from os.path import basename, abspath, dirname
+sys.path.append(os.path.join(dirname(dirname((abspath(__file__)))), "proto"))
 
 import cherrypy
 import traceback
-from os.path import *
 
 from book import *
-from sample_chapters import *
 from feature_extraction import *
 from classify import *
 from sklearn.externals import joblib
@@ -71,13 +70,13 @@ def classify_chapters():
         solver_id = "solver unknown"
         solver_id = cherrypy.session['solver_id']
         solver = load_solver(solver_id)
-        
+
         output_characters = solver.choose_characters(texts)
         yield from book_table(output_characters, texts, indexes)
 
     except Exception:
         yield from handle_exception("when classifying chapters", sys.exc_info())
-        
+
 ########
 
 def load_solver(solver_id):
@@ -100,7 +99,7 @@ def tr(*xs):
 
 def book_table(output_characters, texts, indexes):
     yield "<h2>Classification of Chapters</h2>"
-    yield """<a href="/">Return to start page<a> <br> <hr>""" 
+    yield """<a href="/">Return to start page<a> <br> <hr>"""
 
     import filter_script # small python module with a single string (import will only load once vs open-read every time)
     yield(filter_script.code)

@@ -87,7 +87,8 @@ class MLCharacterSolver(AbstactCharacterSolver):
         else:
             return [],[]
             
-
+    
+            
     def train(self, texts, reference_characters):
         Xs = [] # Feature vectors
         Ys = [] # Binary as to if this feature is the target
