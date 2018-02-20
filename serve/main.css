@@ -5,6 +5,7 @@ html {
   font-family: sans-serif;
   font-size: 100%;
   -webkit-font-smoothing: antialiased;
+  background-color: aliceblue;
 }
 
 body {
@@ -14,7 +15,12 @@ body {
 
 .infopage {
   margin: auto;
-  max-width: 800px
+  max-width: 800px;
+  background-color: antiquewhite;
+  border-left: solid;
+  border-right: solid;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 footer {
@@ -23,8 +29,16 @@ footer {
 	border-top-style: solid;
 	border-top-width: thin;
 	margin-top: 5rem;
-
 }
+
+.largeform {
+	background: bisque;
+	border: darkblue;
+	border-style: solid;
+	padding: 1rem;
+}
+
+
 /* Copy & Lists */
 p {
 	line-height: 1.5rem;
@@ -61,19 +75,16 @@ h5,
 h6 {
   /* Change heading typefaces here */
   font-family: sans-serif;
-  margin-top: 1.5rem;
-  margin-bottom: 0;
+  margin: 0;
   line-height: 1.5rem;
 }
 h1 {
   font-size: 4.242rem;
   line-height: 4.5rem;
-  margin-top: 3rem;
 }
 h2 {
   font-size: 2.828rem;
   line-height: 3rem;
-  margin-top: 3rem;
 }
 h3 {
   font-size: 1.414rem;
@@ -100,6 +111,16 @@ table th {
   padding-top: 0.5rem;
   line-height: 150%;
 }
+
+/* Blockish elementss */
+img {
+  display: flex;
+  margin: auto;
+  max-width: 75%;
+}
+
+
+
 /* Code blocks */
 code {
   vertical-align: bottom;

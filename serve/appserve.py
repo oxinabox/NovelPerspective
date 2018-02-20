@@ -24,7 +24,7 @@ cherrypy.config.update({
 app_conf = {
     '/':
         { 'tools.staticdir.on':True,
-          'tools.staticdir.dir': os.path.join(app_path),#, "main.css")
+          'tools.staticdir.dir': app_path,
           'tools.staticdir.index' : "indexpage.html"
         }
 }
