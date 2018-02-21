@@ -2,13 +2,18 @@
 <head>
 	<title>NovelPerspective</title>
     <link rel="stylesheet" href="main.css" type="text/css" />
+	<meta name="viewport" content="width=device-width">
 </head>
-<body class="infopage">
-<h1>Novel Perspective</h1>
-<p>This tool detects the main/point-of-view character for each chapter of a book, and allows you create a copy of the ebook with just the chapters about the characters you are interested in.</p>
+<body>
+   
+<div class="infopage">
+<h1>NovelPerspective</h1>
+<p>This tool detects the main/point-of-view character for each chapter of a book, and allows you create a copy of the ebook with just the chapters about the characters you are interested in.
+This is not how the author intended it to be read, but you are a free to consume their works how you want, particularly on a second read through.</p>
 
 <img src="site-graphic.svg" title="Jane is the best character, I want to only read the chapter's about Jane.
 NovelPerspective is a tool to let you do just that."/>
+
 
 <p> Please upload the novel to analyse, and restructure.</p>
 <p>ePub format is preferred. <br/>
@@ -24,54 +29,59 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 <!----------------------------------- -->
 <form class="largeform" enctype="multipart/form-data" action="upload" method="post">
 	<h3>Please upload the ebook</h3>
-	<table>
-		<tr>
-			<td>
-				Ebook File: <br/>
-				 <input type="file" name="myFile">
-			</td>
-			<td>
-				Additional File Preprocessing: <br/>
-				<input type="checkbox" id="rpe" name="reprocess_epub" value="True"/>
-				<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files. For formats other than ePub this will always occur during conversion.">Preprocess ePub</label> <br/>
+	<div class="flex-grid">
+		<div class="flex-ele">
+			Ebook File: <br/>
+			 <input type="file" name="myFile">
+		</div>
+		<div class="flex-row">
+			<div class="flex-ele">
+				<h4> Additional File Preprocessing: </h4>
+				<div>
+					<input type="checkbox" id="rpe" name="reprocess_epub" value="True"/>
+					<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files. For formats other than ePub this will always occur during conversion.">Preprocess ePub</label>
+				</div>
 
-				<input type="checkbox" id="heu" name="heuristics" value="True"/>
-				<label for="heu" title="Runs heuristics to attempt to improve result">Enable Heuristic Processing</label> <br/>
+				<div>
+					<input type="checkbox" id="heu" name="heuristics" value="True"/>
+					<label for="heu" title="Runs heuristics to attempt to improve result">Enable Heuristic Processing</label>
+				</div>
 
-				<input type="checkbox" id="scn" name="split_scenes" value="True"/>
-				<label for="scn" title="Attempt to split book by scenes rather than by chapter">Split into Scenes</label> <br/>
-			</td>
-		</tr>
-		<tr>
-			<td>
-				Character Classification System: <br/>
-				<input type="radio" id="solver1" name="solver_id" value="FirstMentioned">
-				<label for="solver1"
-				 title="Potentially good if the book actually starts each chapter with the name of the main character. However, even then may fail due to the named entity recognizer incorrectly detecting Chapter as an entity name. A weak baseline.">First Mentioned</label>
-
-				<input type="radio" id="solver2" name="solver_id" value="MostMentioned">
-				<label for="solver2" title="Strong baseline">Most Mentioned</label>
-
-				<input type="radio" id="solver3" name="solver_id" value="classic_comb.pkl" checked="checked">
-				<label for="solver3" title="ML model trained on all the data.">Machine Learning Based</label>
-			
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">
-				<input class="mainbutton" type="submit" value="Upload"
-				title="This should be fairly fast, streaming content as it is computed. If it is slow, and then loads all at once, your web-browser, or somewhere else between you and my server, has decided to not handle chunked-encoding in chunks."
-				>
-			</td>
-		</tr>
-	</table>
+				<div>
+					<input type="checkbox" id="scn" name="split_scenes" value="True"/>
+					<label for="scn" title="Attempt to split book by scenes rather than by chapter">Split into Scenes</label>
+				</div>
+			</div>
+			<div class="flex-ele">
+				<h4>Character Classification System:</h4>
+				<div>
+					<input type="radio" id="solver1" name="solver_id" value="FirstMentioned">
+					<label for="solver1"
+					 title="Potentially good if the book actually starts each chapter with the name of the main character. However, even then may fail due to the named entity recognizer incorrectly detecting Chapter as an entity name. A weak baseline.">First Mentioned</label>
+				</div>
+				<div>
+					<input type="radio" id="solver2" name="solver_id" value="MostMentioned">
+					<label for="solver2" title="Strong baseline">Most Mentioned</label>
+				</div>
+				<div>
+					<input type="radio" id="solver3" name="solver_id" value="classic_comb.pkl" checked="checked">
+					<label for="solver3" title="ML model trained on all the data.">Machine Learning Based</label>
+				</div>
+			</div>
+		</div>
+		<div class="flex-ele">
+			<input class="mainbutton" type="submit" value="Upload"
+			title="This should be fairly fast, streaming content as it is computed. If it is slow, and then loads all at once, your web-browser, or somewhere else between you and my server, has decided to not handle chunked-encoding in chunks."
+			>
+		</div>
+	</div>
 </form>
 <!----------------------------------- -->
 
 <p>
 If your web-browser does not render "Transfer-Encoding: chunked" web-pages as the chunks arrive,
-this web-app may appear very slow as you will be waiting for all the computation to complete before output is shown (some recent versions of firefox suffer from this).
-If your web-browser is renders content as it arrives (like Chrome), then you'll see the results as they are computed.
+this web-app may appear very slow as you will be waiting for all the computation to complete before output is shown.
+Most browsers should be capable of chunked transfer and should have no issues.
 </p>
 
 <p><strong>Notice:</strong>
@@ -100,8 +110,10 @@ Poor cases (older writing style, and/or  omniscient 3rd person POV):
 
 
 <footer>
-	Made by <a href="http://white.ucc.asn.au"> Lyndon White <a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a> .
+	Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a> .
 </footer>
+
+</div>
 </body>
 </html>
 

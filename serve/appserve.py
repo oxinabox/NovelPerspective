@@ -33,20 +33,26 @@ cherrypy.log.screen = True
 
 ###################
 
-footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White <a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a>. </footer>"""
+def header(title):
+    return """<html>
+    <head>
+        <title>NovelPerspective: """ + title + """</title>
+        <link rel="stylesheet" href="main.css" type="text/css" />
+        <meta name="viewport" content="width=device-width">
+    </head>
+    <body>
+    """
+
+footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a>. </footer>"""
 
 
 class App:
     @cherrypy.expose
     @cherrypy.config(**{'response.stream': True})
     def upload(self, myFile, **kwargs):
-        yield """<html>
-            <head>
-                <title>NovelPerspective: Preparing Book</title>
-                <link rel="stylesheet" href="main.css" type="text/css" />
-            </head>
-            <body class="infopage">
-        """
+        yield header("Preparing Book")
+        yield """<div class="infopage">"""
+
         check_expires() # Someone added something new, is as good a time as any to check
 
         if myFile.filename == "":
@@ -68,14 +74,7 @@ class App:
     @cherrypy.expose
     @cherrypy.config(**{'response.stream': True})
     def classify(self):
-        yield """<html>
-                <head>
-                    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-                    <link rel="stylesheet" href="main.css" type="text/css" />
-                    <title>NovelPerspective: Character Classifications</title>
-                </head>
-                <body>
-        """
+        yield header("Character Classifications")
         yield from classify_chapters()
         yield footer
 
