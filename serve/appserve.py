@@ -39,6 +39,10 @@ def header(title):
         <title>NovelPerspective: """ + title + """</title>
         <link rel="stylesheet" href="main.css" type="text/css" />
         <meta name="viewport" content="width=device-width">
+        <script
+         src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+         integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+         crossorigin="anonymous"></script>
     </head>
     <body>
     """
@@ -60,7 +64,7 @@ class App:
             raise StopIteration
 
 
-        #save it to disk for disk operations
+        # save it to disk for disk operations
         safe_filename = os.path.basename(myFile.filename) # avoid directory traversal attacks
         disk_fh = expiring_temp_file(safe_filename)
         disk_fh.write(myFile.file.read())
@@ -93,10 +97,15 @@ class App:
 
 
         book = cherrypy.session['book']
-        safe_title = basename(book.title) # avoid directory traveral attacks
-        outfile = expiring_temp_file(safe_title + ".epub")
+        book_filename = basename(book.title)+".epub" # avoid directory traveral attacks
+        outfile = expiring_temp_file(book_filename)
         rewrite_book(book, keep, outfile.name)
-        return static.serve_file(outfile.name, "application/x-download", "attachment")
+        return static.serve_file(
+            outfile.name,
+            "application/x-download",
+            "attachment",
+            book_filename
+        )
 
     @cherrypy.expose
     def kill(self):

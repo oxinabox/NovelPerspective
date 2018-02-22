@@ -42,8 +42,63 @@ footer {
 	padding: 1rem;
 }
 
+
+/* Buttons */
+
 .mainbutton {
-	width: 100%;
+	width: 80%;
+	margin: auto;
+	display: block;
+}
+
+
+.btn {
+	padding:5px 3px;
+	box-shadow: 0px 1px 0px -4px #1c1b18;
+	background:linear-gradient(to bottom, #eae0c2 5%, #ccc2a6 100%);
+	background-color:#eae0c2;
+	border-radius:5px;
+	border:2px solid #203030;
+	cursor:pointer;
+	color:#203030;
+	font-weight:bold;
+	text-shadow:0px 1px 0px #ffffff;
+	transition: 0.25s easy-in-out;
+	text-align: center;
+}
+.btn:hover {
+	background:linear-gradient(to bottom, #ccc2a6 5%, #eae0c2 100%);
+	background-color:#ccc2a6;
+}
+.btn:active {
+	position:relative;
+	top:1px;
+}
+
+
+.btn-file {
+	position: relative;
+	overflow: hidden;
+	max-width: 4rem;
+}
+.btn-file input[type=file] {
+	position: absolute;
+	top: 0;
+	right: 0;
+	min-width: 100%;
+	min-height: 100%;
+	font-size: 100px;
+	text-align: right;
+	filter: alpha(opacity=0);
+	opacity: 0;
+	outline: none;
+	background: white;
+	cursor: inherit;
+	display: block;
+}
+
+.file-selected-lbl {
+    padding-left: 1rem;
 }
 
 
@@ -57,6 +112,7 @@ footer {
 	display: flex;
 	flex-flow: row;
 	justify-content: space-around;
+	margin-top: 1rem;
 }
 
 
@@ -71,6 +127,7 @@ footer {
 .flex-ele {
 	display: flex;
 	flex-flow: column;
+	padding: 0.5rem;
 }
 
 

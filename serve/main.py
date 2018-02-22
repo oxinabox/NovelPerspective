@@ -55,7 +55,7 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 
     yield """
     <form method="POST" action="classify">
-        <input class="mainbutton" type="submit" value="Classify Characters">
+        <input class="mainbutton btn" type="submit" value="Classify Characters">
     </form>
     """
 
@@ -115,5 +115,5 @@ def book_table(output_characters, texts, indexes):
         yield tr(chkbox, lbl, text_segment)
 
     yield("</table>")
-    yield("""<input class="mainbutton" type="submit" value="Generate ebook with only selected chapters"/>""")
+    yield("""<input class="mainbutton btn" type="submit" value="Generate ebook with only selected chapters"/>""")
     yield("</form>")
