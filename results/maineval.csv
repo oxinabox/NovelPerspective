@@ -1,11 +1,11 @@
 Test Set,Method,Train Set,Acc
 ASOIAF,First Mentioned,---,0.25
 ASOIAF,ML Classical Features,SOC,0.95703125
-ASOIAF,ML Hybrid Features,SOC,0.9375
-ASOIAF,ML Word Emb. Features,SOC,0.1171875
-ASOIAF,Most Commonly Mentioned,---,0.90234375
+ASOIAF,ML Hybrid Features,SOC,0.94921875
+ASOIAF,ML Word Emb. Features,SOC,0.82421875
+ASOIAF,Most Commonly Mentioned,---,0.9140625
 SOC,First Mentioned,---,0.42857142857142855
 SOC,ML Classical Features,ASOIAF,0.9230769230769231
-SOC,ML Hybrid Features,ASOIAF,0.9230769230769231
-SOC,ML Word Emb. Features,ASOIAF,0.5274725274725275
+SOC,ML Hybrid Features,ASOIAF,0.6263736263736264
+SOC,ML Word Emb. Features,ASOIAF,0.31868131868131866
 SOC,Most Commonly Mentioned,---,0.7802197802197802

@@ -107,9 +107,6 @@ class App:
             book_filename
         )
 
-    @cherrypy.expose
-    def kill(self):
-        exit()
 
 ##############
 

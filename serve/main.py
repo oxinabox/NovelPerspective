@@ -1,7 +1,10 @@
 import sys
 import os.path
 from os.path import basename, abspath, dirname
-sys.path.append(os.path.join(dirname(dirname((abspath(__file__)))), "proto"))
+def rel_parentdir(*path):
+    parent_dir = dirname(dirname((abspath(__file__))))
+    return os.path.join(parent_dir, *path)
+sys.path.append(rel_parentdir("proto"))
 
 import cherrypy
 import traceback
@@ -86,7 +89,7 @@ def load_solver(solver_id):
         return MostMentionedSolver()
     else: # assume it is something we have serialized
         filename = os.path.basename(solver_id) # Avoid directory traversal attacks
-        return joblib.load(os.path.join("../trained_models", filename))
+        return joblib.load(rel_parentdir("trained_models", filename))
 
 
 #####################################################################
