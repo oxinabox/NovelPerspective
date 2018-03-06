@@ -45,7 +45,7 @@ def header(title):
          crossorigin="anonymous"></script>
     </head>
     <body>
-    """
+    """ + 1024*" " # add extra data to help encourage chunked rendering
 
 footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a>. </footer>"""
 

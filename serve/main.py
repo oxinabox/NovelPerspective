@@ -103,7 +103,7 @@ def score_li(rank, score, character):
     return ("""<li class="character-score"
                    data-character="%s" data-score="%s" data-rank="%s">""" % (character, score, rank)
             + """<span class="character">%s</span>""" % character[:64]
-            + """<span class="score">(%s)</span>""" % str(round(score, 2))
+            + """<span class="score">(%.2f)</span>""" % score
             + "</li>"
             )
 
