@@ -74,8 +74,8 @@ def classify_chapters():
         solver_id = cherrypy.session['solver_id']
         solver = load_solver(solver_id)
 
-        output_characters = solver.choose_characters(texts)
-        yield from book_table(output_characters, texts, indexes)
+        scores = map(solver.score_characters, texts)
+        yield from book_table(scores, texts, indexes)
 
     except Exception:
         yield from handle_exception("when classifying chapters", sys.exc_info())
@@ -99,8 +99,15 @@ def tr(*xs):
     guts = " ".join("<td>"+str(x)+"</td>\t" for x in xs)
     return "<tr>"+guts+"</tr>"
 
+def score_li(rank, score, character):
+    return ("""<li class="character-score"
+                   data-character="%s" data-score="%s" data-rank="%s">""" % (character, score, rank)
+            + """<span class="character">%s</span>""" % character[:64]
+            + """<span class="score">(%s)</span>""" % str(round(score, 2))
+            + "</li>"
+            )
 
-def book_table(output_characters, texts, indexes):
+def book_table(all_character_scores, texts, indexes):
     yield "<h2>Classification of Chapters</h2>"
     yield """<a href="/">Return to start page<a> <br> <hr>"""
 
@@ -109,12 +116,13 @@ def book_table(output_characters, texts, indexes):
 
     yield("""<form method="get" action="generate_ebook">""")
     yield("<table>")
-    for index, character, text in zip(indexes, output_characters, texts):
-        disp_name = character[:64] # For keeping the display vaguely sane
+    for index, character_scores, text in zip(indexes, all_character_scores, texts):
         text_segment = text[:512]
 
+        character_list = "\n".join([score_li(rank, score, name)
+                                    for rank,(score, name) in enumerate(character_scores)])
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
-        lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, disp_name)
+        lbl = """<label for="box%i" id="ch%i" class="chapterlbl">%s</label> """ % (index, index, character_list)
         yield tr(chkbox, lbl, text_segment)
 
     yield("</table>")

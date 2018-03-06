@@ -22,12 +22,12 @@ class AbstactCharacterSolver(ABC):
     def choose_characters(self, raw_texts):
         return (self.choose_character(text) for text in raw_texts)
 
-    def score_characters(self, raw_text)
+    def score_characters(self, raw_text):
         scores, names = self.calculate_character_scores(raw_text)
         assert(len(names) == len(scores))
         if len(names) > 0:
             self.merge_nicknames(scores,names)
-            return sorted(zip(scores,names))
+            return sorted(zip(scores,names), reverse=True)
         else:
             return [(1.0, "[No Characters Detected]")]
 
@@ -87,6 +87,7 @@ class MLCharacterSolver(AbstactCharacterSolver):
         assert(len(names) == len(feature_vectors))
         if len(names) > 0:
             scores = self.classifier.predict_proba(feature_vectors)[:,1] #second index is positive class
+            scores/= scores.sum() # normalize
             return scores, names
         else:
             return [],[]
