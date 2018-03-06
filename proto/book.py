@@ -60,12 +60,25 @@ def is_not_chapter(item):
 
 
 
+"""Given a book, returns a function which will return a key such than when sorted"""
+def get_spine_order_key(book):
+    assert(type(book) == epub.EpubBook)
+    spine_keys = {id:(ii,id) for (ii,(id,show)) in enumerate(book.spine)}
+    past_end = len(spine_keys)
+    return lambda itm: spine_keys.get(itm.get_id(), (past_end,itm.get_id()))
+
+
 def load_chapters(book):
     assert(type(book) == epub.EpubBook)
 
+    spine_key = get_spine_order_key(book)
+    indexed_items= sorted(
+        enumerate(book.items),
+        key=lambda x: spine_key(x[1])) # x = (true_ind, item)
+
     indexes = []
     texts = []
-    for (ii,ch) in enumerate(book.items):
+    for (ii,ch) in indexed_items:
         if is_not_chapter(ch):
             continue
 
