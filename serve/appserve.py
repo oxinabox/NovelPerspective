@@ -18,7 +18,7 @@ cherrypy.config.update({
     'tools.sessions.name' : "NovelPerspective_session_id",
     'tools.sessions.timeout': 90, # 1.5 hours
     'tools.sessions.locking': 'early',
-    'tools.sessions.storage_type': "file",
+    'tools.sessions.storage_class': cherrypy.lib.sessions.FileSession,
     'tools.sessions.storage_path' : "/tmp",
 })
 app_conf = {
@@ -33,19 +33,26 @@ cherrypy.log.screen = True
 
 ###################
 
-def header(title):
-    return """<html>
-    <head>
-        <title>NovelPerspective: """ + title + """</title>
-        <link rel="stylesheet" href="main.css" type="text/css" />
-        <meta name="viewport" content="width=device-width">
-        <script
-         src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-         integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
-         crossorigin="anonymous"></script>
-    </head>
-    <body>
-    """ + 1024*" " # add extra data to help encourage chunked rendering
+def header(title, extra=""):
+    return ("""<html>
+        <head>
+            <meta charset="utf-8" />
+            <meta name="viewport" content="width=device-width">
+            <title>NovelPerspective: """ + title + """</title>
+            <link rel="stylesheet" href="main.css" type="text/css" />
+
+            <script
+            src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
+            crossorigin="anonymous"></script>
+        """
+        + extra
+        + """
+        </head>
+        <body>
+        """
+        + 1024*" " # add extra data to help encourage chunked rendering
+        )
 
 footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a>. </footer>"""
 
@@ -78,7 +85,10 @@ class App:
     @cherrypy.expose
     @cherrypy.config(**{'response.stream': True})
     def classify(self):
-        yield header("Character Classifications")
+        yield header(
+            "Character Classifications",
+            """<link rel="stylesheet" href="classifications.css" type="text/css" />"""
+        )
         yield from classify_chapters()
         yield footer
 

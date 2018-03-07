@@ -1,0 +1,24 @@
+
+.score {
+    font-size: 75%;
+    padding: 0.25rem;
+    color: #555;
+    font-style: italic;
+}
+
+
+
+.character-score[data-rank="0"] {
+	display: list-item;
+}
+.character-score {
+	display: none;
+}
+
+
+.scoreslist {
+    margin: 0;
+    list-style-type: none;
+    padding-left: 0.25rem;
+    min-width: inherit;
+}

@@ -103,7 +103,7 @@ def score_li(rank, score, character):
     return ("""<li class="character-score"
                    data-character="%s" data-score="%s" data-rank="%s">""" % (character, score, rank)
             + """<span class="character">%s</span>""" % character[:64]
-            + """<span class="score">(%.2f)</span>""" % score
+            + """<span class="score" title="confidence">(%.2f)</span>""" % score
             + "</li>"
             )
 
@@ -121,8 +121,13 @@ def book_table(all_character_scores, texts, indexes):
 
         character_list = "\n".join([score_li(rank, score, name)
                                     for rank,(score, name) in enumerate(character_scores)])
+
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
-        lbl = """<label for="box%i" id="ch%i" class="chapterlbl">%s</label> """ % (index, index, character_list)
+        lbl = """<label for="box%i" id="ch%i" class="chapterlbl">
+                    <ol class="scoreslist">
+                    %s
+                    </ol>
+                </label> """ % (index, index, character_list)
         yield tr(chkbox, lbl, text_segment)
 
     yield("</table>")

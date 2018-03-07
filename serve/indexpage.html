@@ -1,8 +1,9 @@
 <html>
 <head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width"/>
 	<title>NovelPerspective</title>
     <link rel="stylesheet" href="main.css" type="text/css" />
-	<meta name="viewport" content="width=device-width">
 	<script
      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
      integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
@@ -57,7 +58,8 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 				<h4> Additional File Preprocessing: </h4>
 				<div>
 					<input type="checkbox" id="rpe" name="reprocess_epub" value="True"/>
-					<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files. For formats other than ePub this will always occur during conversion.">Preprocess ePub</label>
+					<label for="rpe" title="This only has an effect on ePub files. For other formats structure detection is always done as part of the conversion step. This structure detection will also be automatically applied if any of the other options are selected."
+					>Apply Structure Detection</label>
 				</div>
 
 				<div>
