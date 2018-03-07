@@ -15,8 +15,6 @@ def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristi
     input_ext = os.path.splitext(input_filepath)[1]
     output_ext = os.path.splitext(output_filepath)[1]
     assert (output_ext == ".epub")
-    reprocess_epub = reprocess_epub or heuristics or split_scenes
-    # if others selected then must reprocess epub
     if input_ext == ".epub" and not(reprocess_epub):
         shutil.copyfile(input_filepath, output_filepath)
         yield "No conversion required"
@@ -29,18 +27,13 @@ def convert_book(input_filepath, output_filepath, reprocess_epub=False, heuristi
         if heuristics:
             cmd.append('--enable-heuristics')
 
-
-        extra_split_rules = ""
         if split_scenes:
-            extra_split_rules = "  or @class = 'scenebreak'"
+            cmd.append("--chapter")  # Default chapter break rules, but with '.scenebreak' added :
+            cmd.append(""" "//*[((name()='h1' or name()='h2') and re:test(., '\s*((chapter|book|section|part)\s+)|((prolog|prologue|epilogue)(\s+|$))', 'i')) or @class = 'chapter' or @class = 'scenebreak']" """)
+            # Don't use shlex.quote as that breaks other things so calibre can not parse the above
 
-        cmd.append("--chapter")  # Default chapter break rules, but with '.scenebreak' added :
-        cmd.append(""" "//*[ """
-                        + """((name()='h1' or name()='h2' or name()='h3' or name()='h4' or name()='h5' or name()='h6') """
-                             + """and re:test(., '\s*((chapter|book|section|part)\s+)|((prolog|prologue|epilogue)(\s+|$))', 'i')) """
-                        + """ or @class = 'chapter' %s ]" """ % extra_split_rules)
-
-        # Don't use shlex.quote as that breaks other things so calibre can not parse the above
+            #Note: do not change --chapter-mark settings (need to leave to normal page-break)
+            # else it will fail to actually split the chapters into distinct items in the epub file
 
 
         cmd =  " ".join(cmd)
