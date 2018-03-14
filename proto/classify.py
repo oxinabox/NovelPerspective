@@ -112,17 +112,28 @@ class MLCharacterSolver(AbstactCharacterSolver):
         self.classifier.fit(Xs,Ys)
         return self
 
+###################################################
 
-##################################################
+
+
+###################################################
 
 class FirstMentionedSolver(AbstactCharacterSolver):
     def calculate_character_scores(self, raw_text):
         ne_words = ne_preprocess(raw_text)
+        nth = 1
+        scores = []
+        names = []
         for cur in ne_words:
             if type(cur)==nltk.tree.Tree and cur.label()=='NE':
                 name = get_name(cur)
-                return [1.0], [name] # Just return the first one we find
-        return [],[] # No named entities
+                if not name in names:
+                    names.append(name)
+                    scores.append(2**-nth)
+                    nth+=1
+                          
+                
+        return scores,names
 
 class MostMentionedSolver(AbstactCharacterSolver):
     def calculate_character_scores(self, raw_text):
