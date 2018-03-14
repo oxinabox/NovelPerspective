@@ -1,8 +1,9 @@
 <html>
 <head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width"/>
 	<title>NovelPerspective</title>
     <link rel="stylesheet" href="main.css" type="text/css" />
-	<meta name="viewport" content="width=device-width">
 	<script
      src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
      integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E="
@@ -57,7 +58,8 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 				<h4> Additional File Preprocessing: </h4>
 				<div>
 					<input type="checkbox" id="rpe" name="reprocess_epub" value="True"/>
-					<label for="rpe" title="Normally, no preprocessing will be done to epub files. Enabling this causes structure detection to be run. If this is not enabled, neither of the other options in this section will have any effect on epub files. For formats other than ePub this will always occur during conversion.">Preprocess ePub</label>
+					<label for="rpe" title="This only has an effect on ePub files. For other formats structure detection is always done as part of the conversion step. This structure detection will also be automatically applied if any of the other options are selected."
+					>Apply Structure Detection</label>
 				</div>
 
 				<div>
@@ -82,8 +84,12 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 					<label for="solver2" title="Strong baseline">Most Mentioned</label>
 				</div>
 				<div>
-					<input type="radio" id="solver3" name="solver_id" value="CL_SOC.pkl" checked="checked">
-					<label for="solver3" title="ML model trained on Leigh Bardugo's 'Six of Crows'">Machine Learning with Classical Features</label>
+					<input type="radio" id="solver3" name="solver_id" value="CL.pkl" checked="checked">
+					<label for="solver3" title="This is a machine learning based model using classical features like frequency, position and part of speech tags as the input to a Logistic Regression based classifier.">Machine Learning with Classical Features</label>
+				</div>
+				<div>
+					<input type="radio" id="solver3" name="solver_id" value="WE.pkl">
+					<label for="solver" title="WARNING: may be slow on first use as the large model is loaded. This is a machine learning based model using FastText word embedding features as the input to a RBF SVM.">Machine Learning with Word Embeddings</label>
 				</div>
 			</div>
 		</div>
@@ -120,8 +126,6 @@ Poor cases (omniscient 3rd person POV):
 		<li> <a href="http://www.gutenberg.org/ebooks/98">A Tale of Two Cities by Charles Dickens</a> (Public domain)
 		<li> <a href="http://www.gutenberg.org/ebooks/21839">Sense and Sensibility by Jane Austen</a> (Public domain)
 	</ul>
-
-
 <footer>
 	Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a> .
 </footer>

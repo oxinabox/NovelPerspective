@@ -64,6 +64,10 @@ nicknames2name_comb = {
     'Kal' : 'Kaladin',
     'Veil' : 'Shallan',
     
+    # WOT
+    'Carridin' : 'Jaichim',
+    'Niall': 'Pedron'
+    
 }
 
 with open("../flat_data/SA.json","r") as fh:
@@ -80,12 +84,14 @@ with open("../flat_data/dregs01.json","r") as fh:
 with open("../flat_data/dregs02.json","r") as fh:
     ann_SOC = np.hstack([ann_SOC, np.asarray(json.load(fh), dtype='object')])
 
-ann_comb = np.hstack([ann_SOC, ann_ASOIAF, ann_SA])
-
+with open("../flat_data/WOT.json","r") as fh:
+    ann_WOT = np.asarray(json.load(fh), dtype='object')
+    
+    
 np.random.shuffle(ann_SA)
 np.random.shuffle(ann_ASOIAF)
 np.random.shuffle(ann_SOC)
-np.random.shuffle(ann_comb)
-print("ann_comb, ann_SOC, ann_ASOIAF, ann_SA")
-print("lengths: ", list(map(len, (ann_comb, ann_SOC, ann_ASOIAF, ann_SA))))
-print("POVs: ", *[len(np.unique(extract_texts_and_characters(ann)[1])) for ann in (ann_comb, ann_SOC, ann_ASOIAF, ann_SA)])
+np.random.shuffle(ann_WOT)
+print("ann_WOT, ann_SOC, ann_ASOIAF, ann_SA")
+print("lengths: ", list(map(len, (ann_WOT, ann_SOC, ann_ASOIAF, ann_SA))))
+print("POVs: ", *[len(np.unique(extract_texts_and_characters(ann)[1])) for ann in (ann_WOT, ann_SOC, ann_ASOIAF, ann_SA)])
