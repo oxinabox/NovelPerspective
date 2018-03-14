@@ -76,7 +76,7 @@ class AbstactCharacterSolver(ABC):
 
 class MLCharacterSolver(AbstactCharacterSolver):
 
-    def __init__(self, classifier=XGBClassifier(), nicknames2name=dict(), feature_extractor = get_feature_vectors):
+    def __init__(self, classifier, nicknames2name=dict(), feature_extractor = get_feature_vectors):
         self.classifier = classifier
         self.feature_extractor = feature_extractor
         super().__init__(nicknames2name)
