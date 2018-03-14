@@ -35,6 +35,7 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
     cherrypy.session['solver_id'] = solver_id
 
     yield "<h2>Preparing Book</h2>"
+    yield """<a href="/">Return to start page<a> </br> <hr>"""
     yield "Performing any preprocessing/conversion required </br>"
     yield """<pre class="readout">"""
     try:
@@ -58,7 +59,9 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 
     yield """
     <form method="POST" action="classify">
-        <input class="mainbutton btn" type="submit" value="Classify Characters">
+        <input class="mainbutton btn" type="submit" value="Classify Characters"
+         title="This may take a while if your browser decided not to render this incrementally. Please be patient."
+        >
     </form>
     """
 
@@ -66,6 +69,11 @@ def prepare_book(input_filepath, output_filepath, solver_id, reprocess_epub=Fals
 ###############################################
 
 def classify_chapters():
+    yield "<h2>Classification of Chapters</h2>"
+    yield """<a href="/">Return to start page</a> <br> <hr>"""
+    import filter_script # small python module with a single string (import will only load once vs open-read every time)
+    yield(filter_script.code)
+
     try:
         book = cherrypy.session['book']
         texts, indexes = load_chapters(book)
@@ -74,8 +82,8 @@ def classify_chapters():
         solver_id = cherrypy.session['solver_id']
         solver = load_solver(solver_id)
 
-        output_characters = solver.choose_characters(texts)
-        yield from book_table(output_characters, texts, indexes)
+        scores = map(solver.score_characters, texts)
+        yield from book_table(scores, texts, indexes)
 
     except Exception:
         yield from handle_exception("when classifying chapters", sys.exc_info())
@@ -99,22 +107,35 @@ def tr(*xs):
     guts = " ".join("<td>"+str(x)+"</td>\t" for x in xs)
     return "<tr>"+guts+"</tr>"
 
+def score_li(rank, score, character):
+    return ("""<li class="character-score"
+                   data-character="%s" data-score="%s" data-rank="%s">""" % (character, score, rank)
+            + """<span class="character">%s</span>""" % character[:64]
+            + """<span class="score" title="confidence">(%.2f)</span>""" % score
+            + "</li>"
+            )
 
-def book_table(output_characters, texts, indexes):
-    yield "<h2>Classification of Chapters</h2>"
-    yield """<a href="/">Return to start page<a> <br> <hr>"""
-
-    import filter_script # small python module with a single string (import will only load once vs open-read every time)
-    yield(filter_script.code)
+def book_table(all_character_scores, texts, indexes):
 
     yield("""<form method="get" action="generate_ebook">""")
-    yield("<table>")
-    for index, character, text in zip(indexes, output_characters, texts):
-        disp_name = character[:64] # For keeping the display vaguely sane
+    yield("""<table class="results">""")
+    yield("<thead><tr>")
+    yield("""<th class="col-keep"/>""")
+    yield("""<th class="col-names"/>""")
+    yield("""<th class="col-sample"/>""")
+    yield("</tr></thead><tbody>")
+    for index, character_scores, text in zip(indexes, all_character_scores, texts):
         text_segment = text[:512]
 
+        character_list = "\n".join([score_li(rank, score, name)
+                                    for rank,(score, name) in enumerate(character_scores)])
+
         chkbox = """<input type="checkbox" id="box%i" name="keep" value="%i" class="keepchapter"/>""" % (index,index)
-        lbl = """<label for="box%i" id="ch%i" class="charactername">%s</label> """ % (index, index, disp_name)
+        lbl = """<label for="box%i" id="ch%i" class="chapterlbl">
+                    <ol class="scoreslist">
+                    %s
+                    </ol>
+                </label> """ % (index, index, character_list)
         yield tr(chkbox, lbl, text_segment)
 
     yield("</table>")

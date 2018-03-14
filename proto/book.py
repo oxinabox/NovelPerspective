@@ -106,8 +106,7 @@ def rewrite_book(book, keep_chapter_inds, new_filename):
     new_book = copy.deepcopy(book)
     new_book.items = []
     for (ii,ch) in enumerate(book.items):
-        if (is_not_chapter(ch)   # keep all non-chapters
-            or ii in keep_chapter_inds):
+        if (is_not_chapter(ch) or ii in keep_chapter_inds):
            new_book.items.append(ch)
 
     new_book.title+=": (some chapters removed)"
