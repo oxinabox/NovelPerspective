@@ -11,9 +11,9 @@ SOC,ML Classical Features,WOT,0.9230769230769231
 SOC,ML Word Emb. Features,ASOIAF,0.945054945054945
 SOC,ML Word Emb. Features,WOT,0.9340659340659341
 SOC,Most Commonly Mentioned,---,0.7912087912087912
-WOT,First Mentioned,---,
-WOT,ML Classical Features,ASOIAF,
-WOT,ML Classical Features,SOC,
-WOT,ML Word Emb. Features,ASOIAF,
-WOT,ML Word Emb. Features,SOC,
-WOT,Most Commonly Mentioned,---,
+WOT,First Mentioned,---,0.04398148148148148
+WOT,ML Classical Features,ASOIAF,0.7453703703703703
+WOT,ML Classical Features,SOC,0.7013888888888888
+WOT,ML Word Emb. Features,ASOIAF,0.6990740740740741
+WOT,ML Word Emb. Features,SOC,0.5509259259259259
+WOT,Most Commonly Mentioned,---,0.6597222222222222
