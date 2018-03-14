@@ -89,6 +89,7 @@ class App:
             "Character Classifications",
             """<link rel="stylesheet" href="classifications.css" type="text/css" />"""
         )
+        yield """<div class="infopage">"""
         yield from classify_chapters()
         yield footer
 

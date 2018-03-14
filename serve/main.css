@@ -48,6 +48,7 @@ footer {
 .mainbutton {
 	width: 80%;
 	margin: auto;
+	margin-top: 1rem;
 	display: block;
 }
 
@@ -196,8 +197,9 @@ h4, h5, h6 {
 
 /* Tables */
 table {
-  margin-top: 1.5rem;
   margin: auto;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   border-spacing: 0rem;
   border-collapse: collapse;
 }

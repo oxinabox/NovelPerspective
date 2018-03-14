@@ -84,8 +84,12 @@ There should be few problems with modern retail epubs, but may cause issues e.g.
 					<label for="solver2" title="Strong baseline">Most Mentioned</label>
 				</div>
 				<div>
-					<input type="radio" id="solver3" name="solver_id" value="CL_SOC.pkl" checked="checked">
-					<label for="solver3" title="ML model trained on Leigh Bardugo's 'Six of Crows'">Machine Learning with Classical Features</label>
+					<input type="radio" id="solver3" name="solver_id" value="CL.pkl" checked="checked">
+					<label for="solver3" title="This is a machine learning based model using classical features like frequency, position and part of speech tags as the input to a Logistic Regression based classifier.">Machine Learning with Classical Features</label>
+				</div>
+				<div>
+					<input type="radio" id="solver3" name="solver_id" value="WE.pkl">
+					<label for="solver" title="WARNING: may be slow on first use as the large model is loaded. This is a machine learning based model using FastText word embedding features as the input to a RBF SVM.">Machine Learning with Word Embeddings</label>
 				</div>
 			</div>
 		</div>
@@ -122,8 +126,6 @@ Poor cases (omniscient 3rd person POV):
 		<li> <a href="http://www.gutenberg.org/ebooks/98">A Tale of Two Cities by Charles Dickens</a> (Public domain)
 		<li> <a href="http://www.gutenberg.org/ebooks/21839">Sense and Sensibility by Jane Austen</a> (Public domain)
 	</ul>
-
-
 <footer>
 	Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a> .
 </footer>

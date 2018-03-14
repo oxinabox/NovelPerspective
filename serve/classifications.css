@@ -1,4 +1,6 @@
 
+
+/* list of names */
 .score {
     font-size: 75%;
     padding: 0.25rem;
@@ -21,4 +23,24 @@
     list-style-type: none;
     padding-left: 0.25rem;
     min-width: inherit;
+}
+
+/*Results table */
+.results {
+	width: 100%;
+	table-layout: fixed;
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+.col-keep {
+	width: 1rem;
+}
+
+.col-names {
+	width: 14rem;
+}
+
+.col-sample {
+	width: 2%;
 }
