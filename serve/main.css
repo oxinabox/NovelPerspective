@@ -109,7 +109,7 @@ footer {
 	flex-flow: column;
 }
 
-.flex-row {
+.controls, .flex-row {
 	display: flex;
 	flex-flow: row;
 	justify-content: space-around;
@@ -119,7 +119,7 @@ footer {
 
 @media (max-width:800px) { 
 	/* we call it a row, but it is a column on mobile */
-	.flex-row {
+	.controls, .flex-row {
 		flex-flow: column;
 	}
 }
@@ -136,13 +136,12 @@ footer {
 /* Copy & Lists */
 p {
 	line-height: 1.5rem;
-    margin-top: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 ul,
 ol {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 ul li,
 ol li {
@@ -180,6 +179,8 @@ h3 {
 h4, h5, h6 {
   font-size: 1rem;
 }
+
+
 
 @media (max-width:800px) { 
 	h1 {
