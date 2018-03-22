@@ -47,11 +47,9 @@ def header(title, extra=""):
             crossorigin="anonymous"></script>
         """
         + extra
-        + """
-        </head>
-        <body>
-        """
-        + 1024*" " # add extra data to help encourage chunked rendering
+        + "</head>"
+        + 1024*" " # Force render
+        + "<body>"
         )
 
 footer = """<footer> Made by <a href="http://white.ucc.asn.au"> Lyndon White<a>. You can find the <a href="https://github.com/oxinabox/NovelPerspective"> source on Github</a>. </footer>"""
