@@ -4,7 +4,7 @@
  
 ### Paper:
 
-(NovelPerspective: Identifying Point of View Characters, 2018; Lyndon White, Roberto Togneri, Wei Liu, and Mohammed Bennamoun. 56th Annual Meeting of the Association for Computational Linguistics (ACL), System Demonstrations](https://white.ucc.asn.au/publications/White2018NovelPerspective.pdf)
+[NovelPerspective: Identifying Point of View Characters, 2018; Lyndon White, Roberto Togneri, Wei Liu, and Mohammed Bennamoun. 56th Annual Meeting of the Association for Computational Linguistics (ACL), System Demonstrations](https://white.ucc.asn.au/publications/White2018NovelPerspective.pdf)
 
 
 ## Details
